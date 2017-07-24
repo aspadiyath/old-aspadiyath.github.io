@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="images/icon.png">
+    <script type="text/javascript" src="js/main.js"></script>
+    <title>fashion.</title>
+    
+</head>
+<body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <h1><a href="index.html">fashion.</a></h1>
+    <h2>homme.</h2>
+    <center>
+    <svg id="changes" width="200" height="500"></svg>
+    <svg id="graph" width="1000" height="500"></svg>
+    <svg id="homme" width="200" height="499.26"></svg>
+    <form>
+        <!--<input type="text" id="myColor" value="Color"/>--> <!--document.getElementById("myColor").value-->
+        <input id="myColor" list="Colors" name="Color" placeholder="Color">
+            <datalist id="Colors">
+                <option value="Red"/>
+                <option value="Orange"/>
+                <option value="Yellow"/>
+                <option value="Green"/>
+                <option value="Blue"/>
+                <option value="Purple"/>
+                <option value="Pink"/>
+                <option value="Brown"/>
+                <option value="White"/>
+                <option value="Gray"/>
+                <option value="Black"/>    
+            </datalist>
+        <input list="Brands" id="myBrand" placeholder="Brand">
+            <datalist id="Brands">
+                <option value="Acne Studios"/>
+                <option value="Azzedine Alaia"/>
+                <option value="Alexander McQueen"/>
+                <option value="Armani"/>
+                <option value="Balenciaga"/>
+                <option value="Balmain"/>
+                <option value="Manolo Blahnik"/>
+                <option value="Hugo Boss"/>
+                <option value="Bottega Veneta"/>
+                <option value="Thom Browne"/>
+                <option value="Bulgari"/> 
+                <option value="Burberry"/>
+                <option value="Calvin Klein"/>
+                <option value="Cartier"/>
+                <option value="Celine"/>
+                <option value="Chanel"/>
+                <option value="Chloe"/>
+                <option value="Christian Dior"/>
+                <option value="Coach"/>
+                <option value="Comme des Garcons"/>
+                <option value="Ann Demeulemeester"/>
+                <option value="DKNY"/>
+                <option value="Dolce & Gabbana"/>
+                <option value="Fendi"/>
+                <option value="Tom Ford"/>
+                <option value="Fossil"/>
+                <option value="Diane von Furstenberg"/>
+                <option value="Jean-Paul Gaultier"/>
+                <option value="Givenchy"/>
+                <option value="Gucci"/>
+                <option value="Helmut Lang"/>
+                <option value="Hermes"/>
+                <option value="Carolina Herrera"/> 
+                <option value="Tommy Hilfiger"/>
+                <option value="Marc Jacobs"/>
+                <option value="Jimmy Choo"/>
+                <option value="Kate Spade New York"/>
+                <option value="Kenzo"/>
+                <option value="Lacoste"/>
+                <option value="Karl Lagerfeld"/>
+                <option value="Derek Lam"/>
+                <option value="Phillip Lim"/>
+                <option value="LOEWE"/>
+                <option value="Christian Louboutin"/>
+                <option value="Maison Margiela"/>
+                <option value="Marni"/>
+                <option value="Max Mara"/>
+                <option value="MCM"/>
+                <option value="Michael Kors"/>
+                <option value="Miu Miu"/>
+                <option value="Moschino"/>
+                <option value="Phillip Plein"/>
+                <option value="Prada"/>
+                <option value="Ralph Lauren"/>
+                <option value="Oscar de la Renta"/>
+                <option value="Roberto Cavalli"/>
+                <option value="Rodarte"/>
+                <option value="Salvatore Ferragamo"/>
+                <option value="Jeremy Scott"/>
+                <option value="Tiffany & Co."/>
+                <option value="Tory Burch"/>
+                <option value="The Trump Organization"/>
+                <option value="Valentino"/>
+                <option value="Kris Van Assche"/>
+                <option value="Walter van Beirendonck"/>
+                <option value="Alexandre Vauthier"/>
+                <option value="Versace"/>
+                <option value="Louis Vuitton"/>
+                <option value="Alexander Wang"/>
+                <option value="Vera Wang"/>
+                <option value="Vivienne Westwood"/>
+                <option value="Jason Wu"/>
+                <option value="Yohji Yamamoto"/>
+                <option value="Yves Saint Laurent"/>
+                <option value="Ermenegildo Zegna"/>
+            </datalist>
+        <input list="Clothing" id="myClothing" placeholder="Clothing Item"/>
+            <datalist id="Clothing">
+                <option value="Sweater"/>
+                <option value="T-Shirt"/>
+                <option value="Polo"/>
+                <option value="Hoodie"/>
+                <option value="Jacket"/>
+                <option value="Pants"/> 
+            </datalist>
+        <input id="updateButton" type="button" value="Update" onclick="formChanged()"/>
+    </form>
+    </center>
+    <script>
+function formChanged() {
+
+    d3.csv("data/changes.csv", function(error, data2) {
+      if (error) throw error;
+
+      var changeDict = data2[0];
+      console.log(changeDict);
+
+        var changesPanel = d3.select("#changes")
+            .append("rect")
+            .style("fill", document.getElementById("myColor").value)
+            .attr("width", 200)
+            .attr("height", 500);
+
+        var changesPanel = d3.select("#changes")
+            .append("rect")
+            .style("fill", "white")
+            .attr("width", 180)
+            .attr("height", 475)
+            .attr("transform", "translate(" + 10 + "," + 10 + ")");
+
+        var label1 = d3.select("#changes")
+            .append("text")
+            .style("font-family", "'Century Gothic', CenturyGothic, AppleGothic")
+            .style("font-weight", "bold")
+            .style("font-style", "italic")
+            .style("font-size", "17px")
+            .style("text-anchor", "middle")
+            .text("Change in Popularity")
+            .attr("transform", "translate(" + 100 + "," + 30 + ")");
+
+        var label2 = d3.select("#changes")
+            .append("text")
+            .style("font-family", "'Century Gothic', CenturyGothic, AppleGothic")
+            .style("font-weight", "bold")
+            .style("font-style", "italic")
+            .style("font-size", "14px")
+            .style("text-anchor", "middle")
+            .text("Over the Previous Year")
+            .attr("transform", "translate(" + 100 + "," + 50 + ")");
+
+        var text1 = d3.select("#changes")
+            .append("text")
+            .style("font-size", "12.5px")
+            .style("text-anchor", "left")
+            .text(document.getElementById("myColor").value + ":")
+            .attr("transform", "translate(" + 13 + "," + 78 + ")");
+
+        var number1 = d3.select("#changes")
+            .append("text")
+            .style("font-size", "19.5px")
+            .style("text-anchor", "left")
+            .text(function(d) {
+                if (changeDict[document.getElementById("myColor").value] > 0) {
+                    return "Increase of " + changeDict[document.getElementById("myColor").value] + "%";
+                } else if (changeDict[document.getElementById("myColor").value] < 0) {
+                    return "Decrease of " + -1*changeDict[document.getElementById("myColor").value] + "%";
+                } else {
+                    return "No Change";
+                }
+            })
+            .attr("transform", "translate(" + 13 + "," + 100 + ")");
+
+        var picture1 = d3.select("#changes")
+            .append("rect")
+            .style("fill", document.getElementById("myColor").value)
+            .attr("width", 160)
+            .attr("height", 70)
+            .attr("transform", "translate(" + 20 + "," + 120 + ")");
+
+        var text2 = d3.select("#changes")
+            .append("text")
+            .style("font-size", "12.5px")
+            .style("text-anchor", "left")
+            .text(document.getElementById("myBrand").value + ":")
+            .attr("transform", "translate(" + 13 + "," + 218 + ")");
+
+        var number2 = d3.select("#changes")
+            .append("text")
+            .style("font-size", "19.5px")
+            .style("text-anchor", "left")
+            .text(function(d) {
+                if (changeDict[document.getElementById("myBrand").value] > 0) {
+                    return "Increase of " + changeDict[document.getElementById("myBrand").value] + "%";
+                } else if (changeDict[document.getElementById("myBrand").value] < 0) {
+                    return "Decrease of " + -1*changeDict[document.getElementById("myBrand").value] + "%";
+                } else {
+                    return "No Change";
+                }
+            })
+            .attr("transform", "translate(" + 13 + "," + 240 + ")");
+
+        /*var background2 = d3.select("#changes")
+            .append("defs")
+            .append("pattern")
+            .attr("id", "bg2")
+            .append("image")
+            .attr("xlink:href", "images/Icons/" + document.getElementById("myBrand").value + ".png")
+            .attr("width", 160)
+            .attr("height", 70);*/
+
+        var picture2 = d3.select("#changes")
+            .append("image")
+            .attr("xlink:href", "images/Icons/" + document.getElementById("myBrand").value + ".png")
+            .attr("width", 160)
+            .attr("height", 70)
+            .attr("transform", "translate(" + 20 + "," + 260 + ")");
+
+        var text3 = d3.select("#changes")
+            .append("text")
+            .style("font-size", "12.5px")
+            .style("text-anchor", "left")
+            .text(document.getElementById("myClothing").value + ":")
+            .attr("transform", "translate(" + 13 + "," + 358 + ")");
+
+        var number3 = d3.select("#changes")
+            .append("text")
+            .style("font-size", "19.5px")
+            .style("text-anchor", "left")
+            .text(function(d) {
+                if (changeDict[document.getElementById("myClothing").value] > 0) {
+                    return "Increase of " + changeDict[document.getElementById("myClothing").value] + "%";
+                } else if (changeDict[document.getElementById("myClothing").value] < 0) {
+                    return "Decrease of " + -1*changeDict[document.getElementById("myClothing").value] + "%";
+                } else {
+                    return "No Change";
+                }
+            })
+            .attr("transform", "translate(" + 13 + "," + 380 + ")");
+
+        var picture3 = d3.select("#changes")
+            .append("image")
+            .attr("xlink:href", "images/maleclothes/" + document.getElementById("myClothing").value + ".png")
+            .attr("width", 160)
+            .attr("height", 70)
+            .attr("transform", "translate(" + 20 + "," + 400 + ")");
+
+    });
+
+    var svg = d3.select("#graph"),
+    margin = {top: 20, right: 20, bottom: 30, left: 20},
+    width = svg.attr("width") - margin.left - margin.right,
+    height = svg.attr("height") - margin.top - margin.bottom;
+
+var parseDate = d3.timeParse("%d-%b-%Y");
+
+var x = d3.scaleTime().range([0, width]),
+    y = d3.scaleLinear().range([height, 0]),
+    z = d3.scaleOrdinal(d3.schemeCategory20c);
+
+var stack = d3.stack();
+
+var area = d3.area()
+    .x(function(d, i) { return x(d.data.Month); })
+    .y0(function(d) { return y(d[0])/3+height/1.4; })
+    .y1(function(d) { return y(d[1])/3+height/1.4; });
+
+var g1 = svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .attr("id", "chart");
+
+var text = d3.select("#graph").append("text")
+        .text("2004")
+        .style("text-anchor", "left")
+        .attr("transform", "translate(" + 25 + "," + 480 + ")");
+
+var text = d3.select("#graph").append("text")
+        .text("2017")
+        .style("text-anchor", "left")
+        .style("color", "white")
+        .attr("transform", "translate(" + 943 + "," + 480 + ")");
+
+
+d3.csv("data/finaldataset.csv", type, function(error, data) {
+  if (error) throw error;
+
+  keys = [myColor, myClothing, myBrand];
+
+  x.domain(d3.extent(data, function(d) { return d.Month; }));
+  z.domain(keys);
+  stack.keys(keys);
+
+  var addbackground = g1.append("rect")
+        .style("fill", "black")
+        .attr("width", 960)
+        .attr("height", 480);
+
+  var layer = g1.selectAll(".layer")
+    .data(stack(data))
+    .enter().append("g")
+      .attr("class", "layer");
+
+  layer.append("path")
+      .attr("class", "area")
+      .style("fill", function(d) {
+            if (d.key == myColor) {
+                if (myColor == "Red") {
+                    return "rgb(255,0,0)";
+                } else if (myColor == "Orange") {
+                    return "rgb(255,165,0)";
+                } else if (myColor == "Yellow") {
+                    return "rgb(255,255,0)";
+                } else if (myColor == "Green") {
+                    return "rgb(0,128,0)";
+                } else if (myColor == "Blue") {
+                    return "rgb(0,0,255)";
+                } else if (myColor == "Purple") {
+                    return "rgb(128,0,128)";
+                } else if (myColor == "Pink") {
+                    return "rgb(255,192,203)";
+                } else if (myColor == "Brown") {
+                    return "rgb(165,42,42)";
+                } else if (myColor == "White") {
+                    return "rgb(255,255,255)";
+                } else if (myColor == "Gray") {
+                    return "rgb(220,220,220)";
+                } else {
+                    return "rgb(128,128,128)";
+                }
+            } else if (d.key == myBrand) {
+                if (myColor == "Red") {
+                    return "rgb(200,0,0)";
+                } else if (myColor == "Orange") {
+                    return "rgb(255,69,0)";
+                } else if (myColor == "Yellow") {
+                    return "rgb(255,215,0)";
+                } else if (myColor == "Green") {
+                    return "rgb(0,255,0)";
+                } else if (myColor == "Blue") {
+                    return "rgb(0,0,128)";
+                } else if (myColor == "Purple") {
+                    return "rgb(75,0,130)";
+                } else if (myColor == "Pink") {
+                    return "rgb(255,105,180)";
+                } else if (myColor == "Brown") {
+                    return "rgb(160,82,45)";
+                } else if (myColor == "White") {
+                    return "rgb(255,245,238)";
+                } else if (myColor == "Gray") {
+                    return "rgb(192,192,192)";
+                } else {
+                    return "rgb(112,128,144)";
+                }
+            } else {
+                if (myColor == "Red") {
+                    return "rgb(150,0,0)";
+                } else if (myColor == "Orange") {
+                    return "rgb(255,127,80)";
+                } else if (myColor == "Yellow") {
+                    return "rgb(255,250,205)";
+                } else if (myColor == "Green") {
+                    return "rgb(152,251,152)";
+                } else if (myColor == "Blue") {
+                    return "rgb(0,191,255)";
+                } else if (myColor == "Purple") {
+                    return "rgb(153,50,204)";
+                } else if (myColor == "Pink") {
+                    return "rgb(199,21,133)";
+                } else if (myColor == "Brown") {
+                    return "rgb(210,105,30)";
+                } else if (myColor == "White") {
+                    return "rgb(245,255,250)";
+                } else if (myColor == "Gray") {
+                    return "rgb(105,105,105)";
+                } else {
+                    return "rgb(119,136,153)";
+                }
+            }
+        })
+      .attr("d", area);
+
+  layer.filter(function(d) { return d[d.length - 1][1] - d[d.length - 1][0] > 0.01; })
+    .append("text")
+      .attr("x", width - 6)
+      .attr("y", function(d) { return y((d[d.length - 1][0] + d[d.length - 1][1]) / 7); })
+      .attr("dy", ".35em")
+      .style("font", "20px Courier New")
+      .style("color", "white")
+      .style("text-anchor", "end")
+      .text(function(d) { return d.key; });
+
+/*  g.append("g") //add axes
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .style("color", "white")
+      .call(d3.axisBottom(x));
+
+  g.append("g")
+      .attr("class", "axis axis--y")
+      .style("color", "white")
+      .call(d3.axisLeft(y).ticks(10, "%"));*/
+});
+
+function type(d, i, columns) {
+  d.Month = parseDate(d.Month);
+  for (var i = 1, n = columns.length; i < n; ++i) d[columns[i]] = d[columns[i]] / 100;
+  return d;
+}
+
+        if (document.getElementById("myClothing").value == "Sweater") {
+            if (document.getElementById("myColor").value == "Red" || document.getElementById("myColor").value == "Orange" || document.getElementById("myColor").value == "Yellow" || document.getElementById("myColor").value == "Green" || document.getElementById("myColor").value == "Blue" || document.getElementById("myColor").value == "Purple" || document.getElementById("myColor").value == "Pink" || document.getElementById("myColor").value == "Brown" || document.getElementById("myColor").value == "White" || document.getElementById("myColor").value == "Gray" || document.getElementById("myColor").value == "Black") {
+                d3.select("#sweater")
+                    .style("visibility", "visible")
+                    .style("fill", document.getElementById("myColor").value);
+
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+
+                myColor = document.getElementById("myColor").value;
+            } else {
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+            }
+            myClothing = document.getElementById("myClothing").value;
+        } else if (document.getElementById("myClothing").value == "T-Shirt") {
+            if (document.getElementById("myColor").value == "Red" || document.getElementById("myColor").value == "Orange" || document.getElementById("myColor").value == "Yellow" || document.getElementById("myColor").value == "Green" || document.getElementById("myColor").value == "Blue" || document.getElementById("myColor").value == "Purple" || document.getElementById("myColor").value == "Pink" || document.getElementById("myColor").value == "Brown" || document.getElementById("myColor").value == "White" || document.getElementById("myColor").value == "Gray" || document.getElementById("myColor").value == "Black") {
+                d3.select("#tshirt")
+                    .style("visibility", "visible")
+                    .style("fill", document.getElementById("myColor").value);
+
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+
+                myColor = document.getElementById("myColor").value;
+            } else {
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+            }
+            myClothing = document.getElementById("myClothing").value;
+        } else if (document.getElementById("myClothing").value == "Polo") {
+            if (document.getElementById("myColor").value == "Red" || document.getElementById("myColor").value == "Orange" || document.getElementById("myColor").value == "Yellow" || document.getElementById("myColor").value == "Green" || document.getElementById("myColor").value == "Blue" || document.getElementById("myColor").value == "Purple" || document.getElementById("myColor").value == "Pink" || document.getElementById("myColor").value == "Brown" || document.getElementById("myColor").value == "White" || document.getElementById("myColor").value == "Gray" || document.getElementById("myColor").value == "Black") {
+                d3.select("#polo")
+                    .style("visibility", "visible")
+                    .style("fill", document.getElementById("myColor").value);
+
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+
+                myColor = document.getElementById("myColor").value;
+            } else {
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+            }
+            myClothing = document.getElementById("myClothing").value;
+        } else if (document.getElementById("myClothing").value == "Hoodie") {
+            if (document.getElementById("myColor").value == "Red" || document.getElementById("myColor").value == "Orange" || document.getElementById("myColor").value == "Yellow" || document.getElementById("myColor").value == "Green" || document.getElementById("myColor").value == "Blue" || document.getElementById("myColor").value == "Purple" || document.getElementById("myColor").value == "Pink" || document.getElementById("myColor").value == "Brown" || document.getElementById("myColor").value == "White" || document.getElementById("myColor").value == "Gray" || document.getElementById("myColor").value == "Black") {
+                d3.select("#hoodie")
+                    .style("visibility", "visible")
+                    .style("fill", document.getElementById("myColor").value);
+
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+
+                myColor = document.getElementById("myColor").value;
+            } else {
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+            }
+            myClothing = document.getElementById("myClothing").value;
+        } else if (document.getElementById("myClothing").value == "Jacket") {
+            if (document.getElementById("myColor").value == "Red" || document.getElementById("myColor").value == "Orange" || document.getElementById("myColor").value == "Yellow" || document.getElementById("myColor").value == "Green" || document.getElementById("myColor").value == "Blue" || document.getElementById("myColor").value == "Purple" || document.getElementById("myColor").value == "Pink" || document.getElementById("myColor").value == "Brown" || document.getElementById("myColor").value == "White" || document.getElementById("myColor").value == "Gray" || document.getElementById("myColor").value == "Black") {
+                d3.select("#jacket1")
+                    .style("visibility", "visible")
+                    .style("fill", document.getElementById("myColor").value);
+                d3.select("#jacket2")
+                    .style("visibility", "visible")
+                    .style("fill", document.getElementById("myColor").value);
+
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+
+                myColor = document.getElementById("myColor").value;
+            } else {
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+            }
+            myClothing = document.getElementById("myClothing").value;
+        } else if (document.getElementById("myClothing").value == "Pants") {
+            if (document.getElementById("myColor").value == "Red" || document.getElementById("myColor").value == "Orange" || document.getElementById("myColor").value == "Yellow" || document.getElementById("myColor").value == "Green" || document.getElementById("myColor").value == "Blue" || document.getElementById("myColor").value == "Purple" || document.getElementById("myColor").value == "Pink" || document.getElementById("myColor").value == "Brown" || document.getElementById("myColor").value == "White" || document.getElementById("myColor").value == "Gray" || document.getElementById("myColor").value == "Black") {
+                d3.select("#pants")
+                    .style("visibility", "visible")
+                    .style("fill", document.getElementById("myColor").value);
+
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+
+                myColor = document.getElementById("myColor").value;
+            } else {
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+            }
+            myClothing = document.getElementById("myClothing").value;
+        } else {
+                d3.select("#sweater")
+                    .style("visibility", "hidden");
+                d3.select("#tshirt")
+                    .style("visibility", "hidden");
+                d3.select("#polo")
+                    .style("visibility", "hidden");
+                d3.select("#hoodie")
+                    .style("visibility", "hidden");
+                d3.select("#jacket1")
+                    .style("visibility", "hidden");
+                d3.select("#jacket2")
+                    .style("visibility", "hidden");
+                d3.select("#pants")
+                    .style("visibility", "hidden");
+        }
+
+    var changeText = d3.select("#homme")
+        .select("text")
+        .style("background-color", "white")
+        .text(document.getElementById("myBrand").value);
+
+    rectadd.attr("visibility", "visible");
+
+
+    myBrand = document.getElementById("myBrand").value;
+    
+}
+
+
+
+
+
+var svg = d3.select("#homme").append("svg")
+        .attr("width", 162.18)
+        .attr("height", 499.26);
+
+    var g = svg.append("g");
+
+    var img = g.append("svg:image")
+        .attr("xlink:href", "images/male.png")
+        .attr("width", 162.18)
+        .attr("height", 499.26);
+
+    var img = g.append("svg:path") //sweater
+            .attr("width", 162.18)
+            .attr("height", 170.352)
+            .attr("transform", "scale(0.405) translate(" + 0 + "," + 146 + ")")
+            .attr("id", "sweater")
+            .style("visibility", "hidden")
+            .attr("d","M216.352 15.993 C 215.171 16.470,213.908 17.341,213.545 17.928 C 213.181 18.515,210.323 20.140,207.192 21.539 C 204.061 22.938,199.700 24.933,197.500 25.974 C 195.300 27.014,191.025 28.831,188.000 30.011 C 184.975 31.192,180.205 33.247,177.400 34.579 C 174.595 35.910,171.558 37.000,170.650 37.000 C 169.743 37.000,169.000 37.367,169.000 37.817 C 169.000 38.266,166.075 39.214,162.500 39.925 C 158.925 40.636,156.000 41.618,156.000 42.109 C 156.000 42.599,154.988 43.020,153.750 43.044 C 151.244 43.093,143.053 45.165,141.500 46.143 C 140.950 46.489,137.912 47.345,134.750 48.045 C 131.588 48.745,129.000 49.697,129.000 50.159 C 129.000 50.622,128.073 51.000,126.940 51.000 C 124.518 51.000,114.361 60.272,113.394 63.366 C 113.026 64.540,111.509 67.300,110.020 69.500 C 108.532 71.700,106.761 75.744,106.083 78.487 C 105.406 81.229,104.487 83.929,104.041 84.487 C 103.596 85.044,102.904 87.075,102.504 89.000 C 102.104 90.925,101.192 93.175,100.476 94.000 C 99.396 95.244,97.625 100.637,95.550 109.000 C 95.345 109.825,94.684 111.775,94.082 113.334 C 93.479 114.893,93.211 116.533,93.487 116.979 C 93.763 117.425,93.363 118.031,92.598 118.324 C 91.811 118.626,90.904 121.061,90.510 123.929 C 90.126 126.718,89.476 129.000,89.065 129.000 C 88.654 129.000,87.772 131.440,87.105 134.423 C 86.437 137.405,85.290 140.345,84.554 140.955 C 83.819 141.565,82.916 144.075,82.547 146.532 C 82.179 148.989,81.517 151.000,81.075 151.000 C 80.634 151.000,79.700 153.700,79.000 157.000 C 78.300 160.300,77.338 163.000,76.863 163.000 C 76.389 163.000,76.000 163.691,76.000 164.535 C 76.000 165.380,75.356 167.067,74.569 168.285 C 73.782 169.503,72.443 173.875,71.594 178.000 C 70.745 182.125,69.373 188.425,68.546 192.000 C 67.719 195.575,67.032 199.457,67.021 200.628 C 67.009 201.798,66.382 203.268,65.627 203.894 C 64.872 204.521,63.951 207.712,63.581 210.986 C 63.211 214.260,62.528 217.174,62.065 217.460 C 61.601 217.747,60.916 219.200,60.542 220.690 C 60.168 222.180,58.371 225.943,56.549 229.051 C 54.727 232.160,52.643 236.345,51.918 238.352 C 51.192 240.358,50.323 242.000,49.986 242.000 C 49.649 242.000,48.755 243.575,48.000 245.500 C 47.245 247.425,46.351 249.000,46.014 249.000 C 45.677 249.000,44.829 250.687,44.129 252.750 C 42.265 258.240,39.668 263.391,38.328 264.256 C 37.684 264.672,36.859 266.364,36.496 268.016 C 36.134 269.668,35.241 272.253,34.512 273.760 C 33.784 275.267,32.872 278.975,32.486 282.000 C 32.100 285.025,31.206 288.175,30.499 289.000 C 29.792 289.825,28.890 294.325,28.496 299.000 C 28.101 303.675,27.441 307.950,27.029 308.500 C 26.616 309.050,25.748 314.875,25.100 321.445 C 24.452 328.014,23.551 333.864,23.097 334.445 C 22.644 335.025,21.980 338.797,21.622 342.827 C 21.264 346.857,20.289 351.473,19.456 353.086 C 18.343 355.237,18.214 356.531,18.970 357.943 C 20.283 360.398,20.301 364.696,19.000 365.500 C 17.484 366.437,17.804 373.947,19.429 375.571 C 21.135 377.277,28.670 377.489,29.218 375.846 C 29.468 375.096,33.080 374.626,39.551 374.500 C 52.635 374.246,52.361 374.288,54.847 372.133 C 56.393 370.792,57.000 369.117,57.000 366.192 C 57.000 363.951,57.374 361.887,57.832 361.604 C 58.289 361.321,59.260 357.132,59.988 352.295 C 60.717 347.458,61.680 343.019,62.128 342.432 C 62.576 341.844,63.457 338.919,64.084 335.932 C 65.232 330.466,67.322 327.000,69.468 327.000 C 70.105 327.000,71.245 325.425,72.000 323.500 C 72.755 321.575,73.685 320.000,74.065 320.000 C 74.446 320.000,75.355 318.557,76.086 316.793 C 76.816 315.029,78.221 312.779,79.207 311.793 C 80.193 310.807,81.000 309.362,81.000 308.583 C 81.000 307.804,81.338 307.017,81.750 306.833 C 82.895 306.325,88.000 298.540,88.000 297.303 C 88.000 296.704,88.675 295.955,89.500 295.638 C 90.325 295.322,91.000 294.580,91.000 293.990 C 91.000 293.399,91.900 291.950,93.000 290.770 C 94.100 289.589,95.000 287.863,95.000 286.933 C 95.000 286.004,95.903 284.627,97.007 283.872 C 98.530 282.832,99.167 280.929,99.645 276.000 C 99.991 272.425,100.608 269.050,101.016 268.500 C 101.424 267.950,102.291 262.775,102.943 257.000 C 103.595 251.225,104.518 245.600,104.993 244.500 C 105.468 243.400,106.384 240.137,107.028 237.250 C 107.672 234.363,108.569 232.000,109.021 232.000 C 109.473 232.000,111.858 227.837,114.322 222.750 C 125.324 200.033,129.854 190.324,130.536 188.000 C 130.939 186.625,131.681 185.235,132.185 184.910 C 132.688 184.586,133.173 183.348,133.263 182.160 C 133.963 172.867,134.500 184.846,134.500 209.750 C 134.500 226.113,134.905 240.400,135.401 241.500 C 136.761 244.518,136.923 245.317,138.448 256.500 C 139.801 266.422,142.195 278.757,143.068 280.306 C 145.483 284.587,146.164 298.168,144.507 309.000 C 143.624 314.775,142.708 321.075,142.472 323.000 C 142.236 324.925,141.361 329.425,140.527 333.000 C 139.694 336.575,138.719 343.854,138.360 349.176 L 137.707 358.851 141.103 360.922 C 142.972 362.061,145.648 362.994,147.050 362.996 C 148.453 362.998,150.114 363.514,150.742 364.142 C 153.123 366.523,208.324 366.634,210.582 364.262 C 212.390 362.362,214.064 362.220,239.714 361.776 C 255.956 361.495,267.446 360.894,268.214 360.285 C 268.921 359.724,277.259 359.016,286.741 358.710 C 299.110 358.312,304.830 357.732,306.981 356.659 C 308.630 355.837,311.365 354.859,313.058 354.487 C 314.750 354.116,316.359 353.229,316.631 352.518 C 316.904 351.806,318.406 350.969,319.969 350.656 C 324.039 349.842,325.574 334.010,322.019 329.500 C 321.586 328.950,320.926 327.074,320.554 325.332 C 320.182 323.590,319.117 321.249,318.189 320.130 C 314.050 315.144,313.056 313.533,312.468 310.855 C 312.123 309.285,311.483 308.000,311.046 308.000 C 308.622 308.000,308.197 282.585,310.522 276.738 C 310.908 275.768,311.026 273.631,310.785 271.988 C 310.544 270.344,310.637 269.000,310.993 269.000 C 311.349 269.000,312.230 265.288,312.951 260.750 C 313.673 256.212,314.602 252.050,315.016 251.500 C 315.814 250.441,317.679 243.166,318.862 236.500 L 319.572 232.500 320.286 235.875 C 320.679 237.731,321.000 240.454,321.000 241.925 C 321.000 243.396,321.547 245.147,322.215 245.815 C 323.742 247.342,323.690 274.842,322.155 277.710 C 318.831 283.921,319.718 323.718,323.259 327.259 C 324.384 328.384,326.158 332.048,327.200 335.402 C 328.243 338.756,330.166 343.765,331.474 346.532 C 332.782 349.300,334.184 352.900,334.590 354.532 C 335.188 356.942,340.249 367.269,345.060 375.896 C 345.552 376.778,346.432 379.413,347.016 381.750 C 347.599 384.087,348.474 386.000,348.959 386.000 C 349.444 386.000,350.146 387.463,350.519 389.250 C 350.891 391.038,351.738 393.400,352.400 394.500 C 353.062 395.600,354.237 398.525,355.010 401.000 C 355.783 403.475,356.761 405.745,357.183 406.043 C 357.831 406.503,358.643 409.393,358.926 412.250 C 358.967 412.663,359.863 413.000,360.917 413.000 C 361.971 413.000,362.983 413.388,363.167 413.863 C 363.595 414.972,386.882 416.000,387.537 414.940 C 388.297 413.710,385.934 370.766,384.982 368.500 C 384.520 367.400,383.890 361.550,383.581 355.500 C 382.557 335.395,381.731 326.000,380.986 326.000 C 380.581 326.000,379.651 323.300,378.919 320.000 C 378.186 316.700,377.280 314.000,376.905 314.000 C 376.530 314.000,375.909 312.313,375.527 310.250 C 375.144 308.188,374.251 305.825,373.543 305.000 C 372.835 304.175,371.716 300.350,371.055 296.500 C 370.394 292.650,369.324 288.417,368.677 287.093 C 368.023 285.757,367.500 280.420,367.500 275.093 C 367.500 269.817,367.180 265.259,366.790 264.965 C 365.922 264.313,368.084 204.703,369.001 204.000 C 369.359 203.725,370.202 189.571,370.874 172.546 C 371.614 153.760,372.517 141.082,373.169 140.296 C 374.918 138.189,374.823 115.127,373.062 114.038 C 371.854 113.291,371.841 112.897,372.980 111.525 C 374.163 110.098,373.556 109.136,368.075 103.757 C 360.727 96.544,355.000 89.736,355.000 88.214 C 355.000 87.621,354.100 86.849,353.000 86.500 C 351.900 86.151,351.000 85.500,351.000 85.054 C 351.000 84.608,349.619 83.671,347.932 82.972 C 346.244 82.273,343.294 80.177,341.377 78.314 C 339.459 76.452,336.564 74.663,334.945 74.339 C 333.325 74.015,332.000 73.385,332.000 72.940 C 332.000 72.494,330.425 71.560,328.500 70.864 C 326.575 70.168,325.000 69.298,325.000 68.932 C 325.000 67.992,317.293 63.000,315.841 63.000 C 314.665 63.000,306.592 55.067,304.539 51.893 C 300.302 45.343,295.958 40.194,290.218 34.921 C 289.273 34.053,287.542 32.200,286.371 30.803 L 284.243 28.264 270.105 28.772 C 258.102 29.204,255.703 29.041,254.211 27.691 C 253.011 26.605,251.987 26.397,250.977 27.035 C 249.113 28.214,243.520 28.272,241.236 27.136 C 240.281 26.661,236.964 25.078,233.865 23.619 C 230.766 22.159,226.542 19.623,224.478 17.982 C 220.489 14.813,219.736 14.628,216.352 15.993 M327.143 379.890 C 324.945 381.283,326.708 385.000,329.567 385.000 C 332.428 385.000,333.116 380.642,330.418 379.607 C 328.504 378.873,328.788 378.848,327.143 379.890 M329.180 390.240 C 329.655 393.564,333.000 393.856,333.000 390.573 C 333.000 388.638,332.487 388.000,330.930 388.000 C 329.359 388.000,328.938 388.539,329.180 390.240 M329.200 402.200 C 327.393 404.007,327.689 412.546,329.625 414.482 C 333.071 417.929,335.471 416.058,335.802 409.666 C 336.198 402.040,332.989 398.411,329.200 402.200 ");
+            //.style("fill", document.getElementById("myColor").value);
+    var img = g.append("svg:path") //tshirt
+            .attr("width", 162.18)
+            .attr("height", 170.352)
+            .attr("transform", "scale(0.055, -0.055) translate(" + 770 + "," + -3650 + ")")
+            .attr("id", "tshirt")
+            .style("visibility", "hidden")
+            .attr("d","M716 2405 c-32 -24 -255 -94 -366 -114 -135 -25 -214 -52 -245 -83 -31 -31 -71 -117 -86 -184 -11 -49 -9 -60 85 -390 53 -186 99 -346 102 -354 4 -12 10 -10 25 10 l21 25 -6 -88 c-4 -49 -11 -109 -17 -135 -6 -26 -11 -108 -12 -182 -2 -120 1 -146 25 -231 15 -53 37 -117 48 -142 27 -61 31 -240 6 -307 -9 -25 -19 -76 -22 -115 l-6 -70 53 -14 c89 -22 326 -25 469 -6 69 9 188 25 265 35 306 40 382 51 435 66 64 18 153 63 127 64 -10 0 -20 8 -24 18 -3 9 -11 23 -17 30 -24 32 -46 120 -46 187 0 82 15 236 31 315 6 30 19 98 29 150 31 161 42 214 49 251 6 28 53 88 204 259 l197 223 0 62 c0 81 -13 117 -69 191 -49 64 -164 174 -182 174 -6 0 -25 7 -42 15 -18 8 -57 23 -88 35 -59 22 -120 72 -182 151 l-37 45 -67 -8 c-38 -5 -120 -9 -183 -11 -109 -2 -121 0 -233 36 -79 25 -133 49 -163 72 -51 39 -52 40 -78 20z");
+
+    var img = g.append("svg:path") //polo
+            .attr("width", 162.18)
+            .attr("height", 170.352)
+            .attr("transform", "scale(0.055, -0.055) translate(" + 550 + "," + -3750 + ")")
+            .attr("id", "polo")
+            .style("visibility", "hidden")
+            .attr("d","M980 2565 c-95 -35 -93 -34 -80 -50 7 -9 11 -18 8 -20 -3 -3 -79 -25 -169 -49 -90 -24 -177 -49 -193 -55 -15 -6 -60 -16 -100 -21 -126 -18 -123 -16 -171 -90 -37 -57 -52 -95 -85 -217 -21 -81 -57 -186 -78 -233 -22 -47 -49 -115 -61 -152 -13 -37 -27 -70 -32 -73 -5 -4 -9 -11 -9 -17 0 -13 268 -273 315 -305 44 -30 54 -29 83 5 l23 27 -6 -55 c-10 -87 -6 -230 11 -347 48 -341 55 -487 28 -651 l-15 -97 28 -22 c15 -13 36 -23 46 -23 9 0 30 -14 45 -30 26 -29 33 -32 148 -44 66 -7 131 -19 145 -27 34 -19 301 -24 474 -9 146 13 362 60 448 98 65 29 66 45 15 182 l-43 115 2 160 c0 88 6 189 13 225 6 36 14 89 17 117 6 62 23 61 23 -2 0 -47 7 -75 20 -75 5 0 22 24 38 53 17 28 52 75 79 102 26 28 64 68 83 90 19 22 57 59 83 82 l48 42 -6 78 c-4 46 -2 102 5 138 25 130 49 324 49 402 1 82 1 82 -33 108 -19 14 -42 43 -51 63 -24 52 -59 87 -140 141 -99 65 -105 68 -153 92 -24 12 -68 44 -98 72 -53 48 -54 50 -34 64 11 8 20 20 20 26 -1 11 -117 108 -157 130 -10 6 -49 -10 -122 -51 -59 -34 -118 -63 -132 -67 -19 -5 -49 12 -156 90 -72 52 -133 95 -135 94 -2 0 -19 -6 -38 -14z");
+    var img = g.append("svg:path") //hoodie
+            .attr("width", 162.18)
+            .attr("height", 170.352)
+            .attr("transform", "scale(0.055, -0.055) translate(" + 110 + "," + -4190 + ")")
+            .attr("id", "hoodie")
+            .style("visibility", "hidden")
+            .attr("d","M1285 3056 c-21 -15 -24 -58 -11 -129 l7 -36 -73 -22 c-40 -12 -107 -32 -148 -45 -41 -13 -109 -28 -150 -33 -135 -19 -141 -22 -243 -132 -31 -34 -106 -268 -107 -331 0 -15 -17 -76 -38 -135 -22 -59 -45 -133 -52 -163 -6 -30 -32 -120 -56 -199 -25 -79 -51 -181 -59 -227 -8 -47 -23 -98 -32 -115 -10 -17 -26 -44 -35 -61 -9 -17 -30 -45 -47 -62 -36 -37 -139 -290 -178 -434 -60 -229 -64 -253 -61 -440 l3 -177 147 -1 c172 -2 158 -16 158 149 l0 108 49 89 c37 68 69 108 136 172 123 118 138 155 139 343 1 120 4 138 35 230 31 91 39 105 98 164 35 35 66 61 69 58 3 -3 1 -22 -5 -44 -17 -60 -13 -191 8 -274 11 -41 24 -110 30 -154 5 -44 17 -100 26 -125 20 -55 31 -276 17 -337 -16 -71 30 -125 118 -137 25 -4 74 -11 110 -16 186 -27 307 -32 471 -21 181 12 253 23 344 50 33 10 103 31 155 46 138 39 153 49 145 88 -3 18 -12 46 -20 62 -54 118 -55 121 -55 207 0 49 9 131 21 190 12 57 27 141 33 188 14 107 26 87 33 -56 4 -81 1 -124 -17 -210 -31 -151 -24 -248 31 -421 23 -70 45 -132 49 -138 4 -5 15 -34 24 -62 10 -29 27 -70 39 -92 12 -21 37 -65 54 -96 18 -32 47 -103 65 -159 18 -56 33 -102 34 -104 1 -2 50 0 107 4 l106 7 -3 136 c-6 312 -33 548 -72 624 -73 140 -106 359 -84 563 16 150 16 145 6 334 -7 116 -5 158 7 210 23 95 42 263 41 356 l0 81 -90 103 c-99 115 -148 155 -244 202 -67 33 -145 82 -155 98 -3 5 -1 11 5 15 33 20 -9 122 -62 150 -32 16 -118 45 -135 45 -17 0 -17 -19 1 -39 28 -32 56 -92 56 -122 0 -56 -67 -60 -320 -14 -174 31 -182 33 -239 85 l-53 49 28 25 c16 14 35 26 42 26 7 0 18 11 24 25 18 40 -2 70 -56 84 -62 15 -148 14 -171 -3z");
+
+    var img = g.append("svg:path") //jacket
+            .attr("width", 162.18)
+            .attr("height", 170.352)
+            .attr("transform", "scale(0.055, -0.055) translate(" + 120 + "," + -4400 + ")")
+            .attr("id", "jacket1")
+            .style("visibility", "hidden")
+            .attr("d","M1445 3221 c-87 -57 -98 -61 -383 -142 -161 -46 -296 -86 -301 -89 -13 -8 -381 -1047 -381 -1075 0 -44 -40 -209 -58 -237 -9 -16 -42 -63 -73 -105 -37 -52 -70 -115 -98 -186 -40 -105 -49 -143 -86 -402 -7 -55 -18 -121 -24 -146 -12 -51 -44 -379 -39 -385 5 -4 269 96 285 109 8 5 13 33 13 67 0 41 9 78 30 131 38 91 153 311 185 353 13 17 42 69 64 116 36 74 42 99 52 195 14 139 31 188 122 344 41 69 89 154 107 189 18 35 34 62 35 60 1 -2 -26 -408 -61 -903 -34 -495 -60 -903 -56 -906 4 -4 155 -50 335 -104 318 -94 329 -96 353 -80 62 40 62 49 39 1065 l-14 625 29 760 c34 872 32 805 23 805 -5 0 -48 -27 -98 -59z");
+
+    var img = g.append("svg:path") //jacket
+            .attr("width", 162.18)
+            .attr("height", 170.352)
+            .attr("transform", "scale(0.055, -0.055) translate(" + 120 + "," + -4400 + ")")
+            .attr("id", "jacket2")
+            .style("visibility", "hidden")
+            .attr("d","M1967 3250 c-3 -8 -76 -364 -161 -790 l-156 -775 45 -709 c25 -390 45 -737 45 -771 0 -47 5 -68 20 -88 38 -48 55 -45 361 64 156 56 285 103 286 103 1 1 -9 98 -22 216 -14 118 -24 222 -24 230 0 8 44 -103 98 -248 55 -145 101 -265 103 -268 7 -6 211 -45 215 -40 2 2 -12 177 -32 389 l-37 385 -52 149 -52 149 28 594 c15 327 27 619 25 648 l-2 52 -304 273 -305 272 -28 70 c-44 111 -45 112 -51 95z");
+
+    var img = g.append("svg:path") //pants
+            .attr("width", 162.18)
+            .attr("height", 170.352)
+            .attr("transform", "scale(0.055, -0.055) translate(" + 870 + "," + -8000 + ")")
+            .attr("id", "pants")
+            .style("visibility", "hidden")
+            .attr("d","M145 4443 c-10 -83 -19 -234 -20 -343 -1 -107 -7 -220 -13 -250 -6 -30 -13 -113 -17 -185 -3 -71 -14 -168 -23 -215 -14 -70 -16 -136 -14 -371 3 -281 -4 -388 -39 -589 -14 -85 -22 -573 -11 -670 24 -193 52 -398 61 -435 5 -22 13 -67 17 -100 6 -55 11 -64 59 -112 29 -28 61 -64 72 -79 l20 -27 143 26 c78 14 144 27 146 29 2 2 6 42 10 88 5 65 14 99 37 145 22 44 31 79 35 130 4 65 2 76 -30 140 -20 39 -48 108 -63 154 -23 70 -26 94 -21 144 3 33 11 65 16 72 23 27 62 166 76 263 7 57 23 124 34 150 24 54 50 167 50 219 0 36 10 94 56 318 41 204 61 286 94 389 26 81 34 96 42 82 7 -12 8 -52 3 -110 -4 -50 -7 -205 -6 -343 1 -244 0 -255 -25 -333 -49 -158 -71 -495 -39 -619 39 -151 39 -220 0 -396 -30 -133 -48 -435 -50 -805 -2 -352 -2 -356 -28 -435 -35 -112 -53 -203 -42 -214 6 -5 70 -41 143 -80 110 -60 136 -70 149 -60 8 7 33 46 56 87 23 41 54 95 69 121 32 54 58 109 58 124 0 5 15 58 34 116 105 324 124 474 107 833 -6 139 -17 276 -22 303 -6 28 -11 111 -11 185 -1 116 4 154 30 270 17 74 42 167 55 205 13 39 36 113 50 165 14 52 44 161 66 241 22 81 54 227 70 325 16 99 44 267 62 374 52 317 50 550 -7 875 -11 62 -49 199 -58 212 -2 2 -1342 133 -1359 133 -2 0 -12 -66 -22 -147z");
+
+var rectadd = d3.select("#homme")
+        .append("rect")
+        .attr("transform", "translate(" + 6 + "," + 99 + ")")
+        .style("fill", "white")
+        .attr("width", 180)
+        .attr("height", 20)
+        .attr("visibility", "hidden");
+
+var text = d3.select("#homme")
+        .append("text")
+        .text("")
+        .style("text-anchor", "middle")
+        .style("font-family", "'Century Gothic', CenturyGothic, AppleGothic")
+        .style("font-weight", "bold")
+        .style("font-style", "italic")
+        .attr("transform", "translate(" + 98 + "," + 115 + ")");
+
+
+
+
+</script>
+</body>
