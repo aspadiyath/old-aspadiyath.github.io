@@ -397,7 +397,7 @@ d3.csv("data/finaldataset.csv", type, function(error, data) {
   layer.filter(function(d) { return d[d.length - 1][1] - d[d.length - 1][0] > 0.01; })
     .append("text")
       .attr("x", width - 6)
-      .attr("y", function(d) { return y((d[d.length - 1][0] + d[d.length - 1][1]) / 8); })
+      .attr("y", function(d) { return y((d[d.length - 1][0] + d[d.length - 1][1]) / 7); })
       .attr("dy", ".35em")
       .style("font", "20px Courier New")
       .style("color", "white")
