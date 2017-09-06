@@ -1,16 +1,22 @@
 body {
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
     font-size: 14px;
-    color: white;
-    background-color: black;
+    color: black;
+    background-color: white;
     margin: 0;
     padding: 0;
     text-decoration: none;
     font-weight: normal;
 }
 
+h1 {
+  font-size: 100px;
+  text-decoration: none;
+  font-weight: normal;
+  text-align: center;
+}
 a {
-  color: white;
+  color: black;
   text-decoration: none;
 }
 
