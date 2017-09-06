@@ -1,0 +1,98 @@
+body {
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    font-size: 14px;
+    color: white;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+h1 {
+  font-size: 100px;
+  text-decoration: none;
+  font-weight: normal;
+  text-align: center;
+}
+
+a {
+  color: gray;
+  text-decoration: none;
+}
+
+a:hover {
+  color: red;
+}
+
+table {
+  border-collapse: collapse;
+  top: 86vh;
+  position: fixed;
+  float: left;
+}
+
+tbody {
+
+}
+
+td {
+  height: 52px;
+  border-right: 57px solid black;
+  border-left: 57px solid black;
+  font-size: 21px;
+  width: auto;
+  background-color: black;
+}
+
+/*#slideshow { 
+    margin: 50px auto; 
+    position: relative; 
+    width: 240px; 
+    height: 240px; 
+    padding: 10px; 
+    box-shadow: 0 0 20px rgba(0,0,0,0.4); 
+}
+
+#slideshow > div { 
+    position: absolute; 
+    top: 10px; 
+    left: 10px; 
+    right: 10px; 
+    bottom: 10px; 
+}*/
+
+#container {
+  width: 600px;
+  height: 600px;
+  position: relative;
+}
+
+#image {
+  position: absolute;
+}
+
+#name {
+  position: absolute;
+  color: white;
+  font-size: 72px;
+  left: 15px;
+  top: 445px;
+}
+
+#bio {
+  position: absolute;
+  color: black;
+  font-size: 24px;
+  left: 640px;
+  top: 0px;
+}
+
+#role {
+  position: absolute;
+  color: black;
+  font-size: 24px;
+  left: 620px;
+  top: -20px;
+  text-align: left;
+}
