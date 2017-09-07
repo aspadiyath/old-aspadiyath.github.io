@@ -62,6 +62,10 @@ td {
     bottom: 10px; 
 }*/
 
+.mySlides {
+  display: none;
+}
+
 #container {
   width: 600px;
   height: 600px;

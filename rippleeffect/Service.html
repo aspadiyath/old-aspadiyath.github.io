@@ -7,7 +7,30 @@
     <title>Ripple Effect</title>
 </head>
 <body>
-    <h1><a href="index.html">Ripple Effect</a></h1>
+    <h1 style="margin-bottom: 30px"><a href="index.html">Ripple Effect</a></h1>
+    <center>
+    <div style="width:1000px; height: 600px">
+        <img class="mySlides" src="images/Bey1.png">
+        <img class="mySlides" src="images/Bey2.jpg">
+        <img class="mySlides" src="images/Bey3.jpg">
+    </div>
+    </center>
+    <script>
+        var myIndex = 0;
+        carousel();
+
+        function carousel() {
+            var i;
+            var x = document.getElementsByClassName("mySlides");
+            for (i = 0; i < x.length; i++) {
+               x[i].style.display = "none";  
+            }
+            myIndex++;
+            if (myIndex > x.length) {myIndex = 1}    
+            x[myIndex-1].style.display = "block";  
+            setTimeout(carousel, 2000); // Change image every 2 seconds
+        }
+    </script>
     <table>
         <tbody>
           <tr>
