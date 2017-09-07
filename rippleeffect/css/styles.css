@@ -24,7 +24,7 @@ h2 {
 }
 
 h3 {
-  font-size: 20px;
+  font-size: 18px;
   text-decoration: none;
   font-weight: normal;
   text-align: center;
@@ -52,15 +52,19 @@ tbody {
 
 td {
   height: 52px;
-  border-right: 57px solid black;
-  border-left: 57px solid black;
+  border-right: 57px solid #1a0000;
+  border-left: 57px solid #1a0000;
   font-size: 21px;
   width: auto;
-  background-color: black;
+  background-color: #1a0000;
 }
 
 .mySlides {
   display: none;
+}
+
+.purposecontainer {
+  width: 1000px;
 }
 
 #container {
