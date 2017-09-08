@@ -91,9 +91,9 @@ td {
   position: absolute;
   color: black;
   font-size: 15px;
-  left: -330px;
-  top: 7px;
-  text-align: center;
+  left: 620px;
+  top: 130px;
+  text-align: left;
   width: 50%;
 }
 
@@ -104,4 +104,5 @@ td {
   left: 620px;
   top: -20px;
   text-align: left;
+  width: fit-content;
 }
