@@ -1,36 +1,273 @@
-<!DOCTYPE html>
+
+<html>
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" href="images/icon.png">
-    <title>Georgia Tech Available Housing</title>
-    
+    <title>GT Housing</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        
+        td, th {
+            border: 1px solid black;
+        }
+        
+        #buildings td:not(:first-child) {
+            text-align: center;
+        }
+        
+        .clickable {
+            cursor: pointer;
+        }
+        
+        .goodrow {
+            background-color: gold;
+        }
+    </style>
 </head>
 <body>
-    <h1><a href="index.html">Georgia Tech Available Housing</a></h1>
-    <center>
-    <form>
-        <!--<input type="text" id="myColor" value="Color"/>--> <!--document.getElementById("myColor").value-->
-        <input id="myPeople" list="people" name="People" placeholder="Number of roomies?">
-            <datalist id="people">
-                <option value="1"/>
-                <option value="2"/>
-                <option value="3"/>
-                <option value="4"/>
-                <option value="5"/>
-                <option value="6"/>
-            </datalist>
-        <input list="Gender" id="myGender" placeholder="What gender are you?">
-            <datalist id="Gender">
-                <option value="Male"/>
-                <option value="Female"/>
-            </datalist>
-        <input id="updateButton" type="button" value="Update" onclick="formChanged()"/>
-    </form>
-    </center>
-    <script type="text/javascript">
-        function formChanged() {
-            
+<div id="loading">
+Loading data...
+</div>
+<div id="main" style="display:none">
+Last Updated: <div id="lastupdated"></div>
+<h1>Settings</h1>
+Gender:
+<select id="selectGender" name="gender" onchange="reloadData()">
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+</select><br>
+
+Searching for
+<select id="selectThresh" name="thresh" onchange="reloadData()">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4" selected>4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+</select>
+free spot<span id="freeSpotsGrammar"></span>
+
+<h1>Buildings</h1>
+Format: # rooms that meet criteria / total # rooms<br>
+<table id="buildings">
+    <tr>
+        <th>Name</th>
+        <th>2 person</th>
+        <th>3 person</th>
+        <th>4 person</th>
+        <th>5 person</th>
+        <th>6 person</th>
+        <th>7 person</th>
+        <th>Other</th>
+    </tr>
+</table>
+
+<h1>Rooms</h1>
+<div id="roomview">
+<span id="tmpmsg">Plase make a selection from the table above</span>
+<table id="roomtable" style="display:none">
+    <tr>
+        <th>Room #</th>
+        <th>Gender</th>
+        <th>Spots Left</th>
+        <th>Spots</th>
+    </tr>
+</table>
+</div>
+</div>
+<script>
+    function getRequest(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+            if (this.status == 200) {
+                callback(this.responseText);
+            }
+        };
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+    getRequest('https://crossorigin.me/http://housing.gatech.edu/rooms/FreeRooms.json?_=' + new Date().getTime(), function (resp) {
+        let json = JSON.parse(resp);
+        parseData(json);
+    });
+    
+    function readLetters(txt) {
+        let i = 0;
+        for (i = 0; i < txt.length; i++) {
+            let c = txt.charAt(i);
+            let num = parseInt(c);
+            if (!isNaN(num)) break;
         }
-    </script>
+        
+        let j = i;
+        for (j = i; j < txt.length; j++) {
+            let c = txt.charAt(j);
+            let num = parseInt(c);
+            if (isNaN(num)) break;
+        }
+        
+        return {
+            building: txt.substring(0, i),
+            num: parseInt(txt.substring(i, j)),
+            letter: txt.substring(j)
+        };
+    }
+    
+    let settings = {
+        gender: 'Male',
+        thresh: 4
+    };
+    let parsedData = null;
+    
+    function getValidRoomIDs(roomObj) {
+        let roomNums = Object.keys(roomObj);
+        let valid = [];
+        for (let j = 0; j < roomNums.length; j++) {
+            let room = roomObj[roomNums[j]];
+            
+            if (!(room.gender == 'Dynamic' || room.gender == settings.gender)) continue;
+            if (!(room.open.length >= settings.thresh)) continue;
+            
+            valid.push(roomNums[j]);
+        }
+        return valid;
+    }
+    
+    function parseData(json) {
+        let parsed = {};
+        
+        let getBld = function (bid) {
+            
+            return parsed[bid];
+        };
+        
+        let lastUpdated = null;
+    
+        for (let i = 0; i < json.length; i++) {
+            let entry = json[i];
+            let bid = entry.BuildingID;
+            if (!(bid in parsed)) {
+                parsed[bid] = {
+                    name: entry.BuildingName,
+                    rooms: {}
+                };
+            }
+            
+            if (!lastUpdated) lastUpdated = entry.LastUpdated;
+            
+            let bld = parsed[bid];
+            
+            let a = readLetters(entry.RoomNumber);
+            let cap = parseInt(entry.Capacity.substring(0, 1));
+            if (isNaN(cap)) cap = -1;
+            
+            if (!(cap in bld.rooms)) {
+                bld.rooms[cap] = {};
+            }
+            
+            let capBld = bld.rooms[cap];
+            
+            if (!(a.num in capBld)) {
+                capBld[a.num] = {
+                    gender: entry.Gender,
+                    open: []
+                };
+            }
+            
+            capBld[a.num].open.push(a.letter);
+        }
+        
+        $('#lastupdated').html(lastUpdated);
+        
+        loadParsed(parsed);
+    }
+    
+    function loadParsed(parsed) {
+        parsedData = parsed;
+        $('#loading').css('display', 'none');
+        $('#main').css('display', 'block');
+        console.log(parsed);
+        reloadData();
+    }
+    
+    function reloadData() {
+        //Update settings
+        settings.thresh = parseInt($('#selectThresh').find(':selected').val());
+        $('#freeSpotsGrammar').html(settings.thresh == 1 ? '' : 's');
+        settings.gender = $('#selectGender').find(':selected').val();
+        
+        $('#buildings').find('tr').slice(1).remove();
+        let tbl = $('#buildings')[0];
+        
+        let bids = Object.keys(parsedData);
+        for (let i = 0; i < bids.length; i++) {
+            let bld = parsedData[bids[i]];
+            
+            let row = tbl.insertRow(-1);
+            row.insertCell(-1).innerHTML = bld.name;
+            
+            for (let rawSize = 2; rawSize <= 8; rawSize++) {
+                let size = rawSize == 8 ? -1 : rawSize;
+                let cell = row.insertCell(-1);
+                cell.style.background = 'gray';
+                if (size in bld.rooms) {
+                    cell.style.background = 'green';
+                    $(cell).addClass('clickable');
+                    const capBld = bld.rooms[size];
+                    
+                    let numValid = getValidRoomIDs(capBld).length;
+                    if (numValid > 0) {
+                        cell.style['border'] = '3px solid gold';
+                    }
+                    
+                    cell.innerHTML = numValid + ' / ' + Object.keys(capBld).length;
+                    
+                    $(cell).click(function() {
+                        viewRooms(capBld, bld.name, size);
+                    });
+                }
+            }
+        }
+    }
+    
+    function viewRooms(roomObj, name, size) {
+        window.scrollTo(0,document.body.scrollHeight);
+        $('#tmpmsg').html(name + ' - ' + (size > 0 ? size + ' person' : 'Other'));
+        $('#roomtable').css('display', 'table');
+        
+        $('#roomtable').find('tr').slice(1).remove();
+        let tbl = $('#roomtable')[0];
+        
+        let addRoom = function(roomID) {
+            let row = tbl.insertRow(-1);
+            let room = roomObj[roomID];
+            
+            row.insertCell(-1).innerHTML = roomID;
+            row.insertCell(-1).innerHTML = room.gender;
+            row.insertCell(-1).innerHTML = room.open.length;
+            row.insertCell(-1).innerHTML = JSON.stringify(room.open);
+            
+            return row;
+        };
+        
+        let validNums = getValidRoomIDs(roomObj);
+        
+        for (let i = 0; i < validNums.length; i++) {
+            $(addRoom(validNums[i])).addClass('goodrow');
+        }
+        
+        let roomNums = Object.keys(roomObj);
+        
+        for (let i = 0; i < roomNums.length; i++) {
+            if (!validNums.includes(roomNums[i])) {
+                addRoom(roomNums[i]);
+            }
+        }
+    }
+</script>
 </body>
+</html>
