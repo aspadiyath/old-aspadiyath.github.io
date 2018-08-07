@@ -1,341 +1,273 @@
-<!DOCTYPE html>
+
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Georgia Tech Available Housing</title>
+    <title>GT Housing</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        
+        td, th {
+            border: 1px solid black;
+        }
+        
+        #buildings td:not(:first-child) {
+            text-align: center;
+        }
+        
+        .clickable {
+            cursor: pointer;
+        }
+        
+        .goodrow {
+            background-color: gold;
+        }
+    </style>
 </head>
-<meta charset="utf-8">
-<style>
-body {
-  background-color: #d1e5f0;
-  font: 14px sans-serif;
-}
-
-#container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-#title {
-  font: 26px sans-serif;
-  position: absolute;
-  top: -40px;
-  left: 450px;
-}
-
-#FilterableTable {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 40px;
-  left: 20px;
-}
-
-.SearchBar { 
-  display: inline; 
-  position: relative;
-  left: 1%;
-}
-
-.SearchBar input {
-  position: relative;
-  left: 2%;
-}
-
-table { 
-  position: absolute;
-  top: 40px;
-  left: 20px;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-table a:link, a:visited { text-decoration: none; }
-
-table a:hover, a:active { text-decoration: underline; }
-
-table, th, td { border: 1px solid black; }
-
-td, th {
-  padding: 5px;
-  text-align: center;
-  height: 20px;
-}
-
-th {
-  background-color: #4393c3;
-  color: #d9f0a3;
-}
-
-td { background-color: #92c5de; }
-
-tr:hover td { background-color: #edf8b1; }
-
-</style>
 <body>
-<script src="http://d3js.org/d3.v3.js"></script>
+<div id="loading">
+Loading data...
+</div>
+<div id="main" style="display:none">
+Last Updated: <div id="lastupdated"></div>
+<h1>Settings</h1>
+Gender:
+<select id="selectGender" name="gender" onchange="reloadData()">
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+</select><br>
+
+Searching for
+<select id="selectThresh" name="thresh" onchange="reloadData()">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4" selected>4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+</select>
+free spot<span id="freeSpotsGrammar"></span>
+
+<h1>Buildings</h1>
+Format: # rooms that meet criteria / total # rooms<br>
+<table id="buildings">
+    <tr>
+        <th>Name</th>
+        <th>2 person</th>
+        <th>3 person</th>
+        <th>4 person</th>
+        <th>5 person</th>
+        <th>6 person</th>
+        <th>7 person</th>
+        <th>Other</th>
+    </tr>
+</table>
+
+<h1>Rooms</h1>
+<div id="roomview">
+<span id="tmpmsg">Plase make a selection from the table above</span>
+<table id="roomtable" style="display:none">
+    <tr>
+        <th>Room #</th>
+        <th>Gender</th>
+        <th>Spots Left</th>
+        <th>Spots</th>
+    </tr>
+</table>
+</div>
+</div>
 <script>
-
-var column_names = ["Building","Room Number","Gender","Bed Spots","Room Capacity"];
-var clicks = {building: 0, roomNumber: 0, gender: 0, bedSpots: 0, roomCapacity: 0};
-
-// draw the table
-d3.select("body").append("div")
-  .attr("id", "container")
-
-d3.select("#container").append("div")
-  .attr("id", "FilterableTable");
-
-d3.select("#FilterableTable").append("h1")
-  .attr("id", "title")
-  .text("Georgia Tech Available Housing")
-
-d3.select("#FilterableTable").append("div")
-  .attr("class", "SearchBar")
-  .append("p")
-    .attr("class", "SearchBar")
-    .text("Search By Building:");
-
-d3.select(".SearchBar")
-  .append("input")
-    .attr("class", "SearchBar")
-    .attr("id", "search")
-    .attr("type", "text")
-    .attr("placeholder", "Search...");
-  
-var table = d3.select("#FilterableTable").append("table");
-table.append("thead").append("tr"); 
-
-var headers = table.select("tr").selectAll("th")
-    .data(column_names)
-  .enter()
-    .append("th")
-    .text(function(d) { return d; });
-
-var rows, row_entries, row_entries_no_anchor, row_entries_with_anchor;
-  
-d3.json("data/data.json", function(data) { // loading data from server
-  
-  // draw table body with rows
-  table.append("tbody")
-
-  // data bind
-  rows = table.select("tbody").selectAll("tr")
-    .data(data, function(d){ return d.id; });
-  
-  // enter the rows
-  rows.enter()
-    .append("tr")
-  
-  // enter td's in each row
-  row_entries = rows.selectAll("td")
-      .data(function(d) { 
-        var arr = [];
-        for (var k in d) {
-          if (d.hasOwnProperty(k)) {
-            arr.push(d[k]);
-          }
+    function getRequest(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+            if (this.status == 200) {
+                callback(this.responseText);
+            }
+        };
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+    getRequest('https://crossorigin.me/http://housing.gatech.edu/rooms/FreeRooms.json?_=' + new Date().getTime(), function (resp) {
+        let json = JSON.parse(resp);
+        parseData(json);
+    });
+    
+    function readLetters(txt) {
+        let i = 0;
+        for (i = 0; i < txt.length; i++) {
+            let c = txt.charAt(i);
+            let num = parseInt(c);
+            if (!isNaN(num)) break;
         }
-        return [arr[1],arr[2],arr[3],arr[5],arr[4]];
-      })
-    .enter()
-      .append("td") 
-
-  // draw row entries with no anchor 
-  row_entries_no_anchor = row_entries.filter(function(d) {
-    return (/https?:\/\//.test(d) == false)
-  })
-  row_entries_no_anchor.text(function(d) { return d; })
-
-  // draw row entries with anchor
-  row_entries_with_anchor = row_entries.filter(function(d) {
-    return (/https?:\/\//.test(d) == true)  
-  })
-  row_entries_with_anchor
-    .append("a")
-    .attr("href", function(d) { return d; })
-    .attr("target", "_blank")
-  .text(function(d) { return d; })
+        
+        let j = i;
+        for (j = i; j < txt.length; j++) {
+            let c = txt.charAt(j);
+            let num = parseInt(c);
+            if (isNaN(num)) break;
+        }
+        
+        return {
+            building: txt.substring(0, i),
+            num: parseInt(txt.substring(i, j)),
+            letter: txt.substring(j)
+        };
+    }
     
+    let settings = {
+        gender: 'Male',
+        thresh: 4
+    };
+    let parsedData = null;
     
-  /**  search functionality **/
-    d3.select("#search")
-      .on("keyup", function() { // filter according to key pressed 
-        var searched_data = data,
-            text = this.value.trim();
+    function getValidRoomIDs(roomObj) {
+        let roomNums = Object.keys(roomObj);
+        let valid = [];
+        for (let j = 0; j < roomNums.length; j++) {
+            let room = roomObj[roomNums[j]];
+            
+            if (!(room.gender == 'Dynamic' || room.gender == settings.gender)) continue;
+            if (!(room.open.length >= settings.thresh)) continue;
+            
+            valid.push(roomNums[j]);
+        }
+        return valid;
+    }
+    
+    function parseData(json) {
+        let parsed = {};
         
-        var searchResults = searched_data.map(function(r) {
-          var regex = new RegExp("^" + text + ".*", "i");
-          if (regex.test(r.building)) { // if there are any results
-            return regex.exec(r.building)[0]; // return them to searchResults
-          } 
-        })
+        let getBld = function (bid) {
+            
+            return parsed[bid];
+        };
         
-        // filter blank entries from searchResults
-        searchResults = searchResults.filter(function(r){ 
-          return r != undefined;
-        })
+        let lastUpdated = null;
+    
+        for (let i = 0; i < json.length; i++) {
+            let entry = json[i];
+            let bid = entry.BuildingID;
+            if (!(bid in parsed)) {
+                parsed[bid] = {
+                    name: entry.BuildingName,
+                    rooms: {}
+                };
+            }
+            
+            if (!lastUpdated) lastUpdated = entry.LastUpdated;
+            
+            let bld = parsed[bid];
+            
+            let a = readLetters(entry.RoomNumber);
+            let cap = parseInt(entry.Capacity.substring(0, 1));
+            if (isNaN(cap)) cap = -1;
+            
+            if (!(cap in bld.rooms)) {
+                bld.rooms[cap] = {};
+            }
+            
+            let capBld = bld.rooms[cap];
+            
+            if (!(a.num in capBld)) {
+                capBld[a.num] = {
+                    gender: entry.Gender,
+                    open: []
+                };
+            }
+            
+            capBld[a.num].open.push(a.letter);
+        }
         
-        // filter dataset with searchResults
-        searched_data = searchResults.map(function(r) {
-           return data.filter(function(p) {
-            return p.building.indexOf(r) != -1;
-          })
-        })
-
-        // flatten array 
-        searched_data = [].concat.apply([], searched_data)
+        $('#lastupdated').html(lastUpdated);
         
-        // data bind with new data
-        rows = table.select("tbody").selectAll("tr")
-          .data(searched_data, function(d){ return d.id; })
+        loadParsed(parsed);
+    }
+    
+    function loadParsed(parsed) {
+        parsedData = parsed;
+        $('#loading').css('display', 'none');
+        $('#main').css('display', 'block');
+        console.log(parsed);
+        reloadData();
+    }
+    
+    function reloadData() {
+        //Update settings
+        settings.thresh = parseInt($('#selectThresh').find(':selected').val());
+        $('#freeSpotsGrammar').html(settings.thresh == 1 ? '' : 's');
+        settings.gender = $('#selectGender').find(':selected').val();
         
-        // enter the rows
-        rows.enter()
-         .append("tr");
-         
-        // enter td's in each row
-        row_entries = rows.selectAll("td")
-            .data(function(d) { 
-              var arr = [];
-              for (var k in d) {
-                if (d.hasOwnProperty(k)) {
-                  arr.push(d[k]);
+        $('#buildings').find('tr').slice(1).remove();
+        let tbl = $('#buildings')[0];
+        
+        let bids = Object.keys(parsedData);
+        for (let i = 0; i < bids.length; i++) {
+            let bld = parsedData[bids[i]];
+            
+            let row = tbl.insertRow(-1);
+            row.insertCell(-1).innerHTML = bld.name;
+            
+            for (let rawSize = 2; rawSize <= 8; rawSize++) {
+                let size = rawSize == 8 ? -1 : rawSize;
+                let cell = row.insertCell(-1);
+                cell.style.background = 'gray';
+                if (size in bld.rooms) {
+                    cell.style.background = 'green';
+                    $(cell).addClass('clickable');
+                    const capBld = bld.rooms[size];
+                    
+                    let numValid = getValidRoomIDs(capBld).length;
+                    if (numValid > 0) {
+                        cell.style['border'] = '3px solid gold';
+                    }
+                    
+                    cell.innerHTML = numValid + ' / ' + Object.keys(capBld).length;
+                    
+                    $(cell).click(function() {
+                        viewRooms(capBld, bld.name, size);
+                    });
                 }
-              }
-              return [arr[1],arr[2],arr[3],arr[5],arr[4]];
-            })
-          .enter()
-            .append("td") 
-
-        // draw row entries with no anchor 
-        row_entries_no_anchor = row_entries.filter(function(d) {
-          return (/https?:\/\//.test(d) == false)
-        })
-        row_entries_no_anchor.text(function(d) { return d; })
-
-        // draw row entries with anchor
-        row_entries_with_anchor = row_entries.filter(function(d) {
-          return (/https?:\/\//.test(d) == true)  
-        })
-        row_entries_with_anchor
-          .append("a")
-          .attr("href", function(d) { return d; })
-          .attr("target", "_blank")
-        .text(function(d) { return d; })
-        
-        // exit
-        rows.exit().remove();
-      })
+            }
+        }
+    }
     
-  /**  sort functionality **/
-  headers
-    .on("click", function(d) {
-      if (d == "Building") {
-        clicks.building++;
-        // even number of clicks
-        if (clicks.building % 2 == 0) {
-          // sort ascending: alphabetically
-          rows.sort(function(a,b) { 
-            if (a.building.toUpperCase() < b.building.toUpperCase()) { 
-              return -1; 
-            } else if (a.building.toUpperCase() > b.building.toUpperCase()) { 
-              return 1; 
-            } else {
-              return 0;
-            }
-          });
-        // odd number of clicks  
-        } else if (clicks.building % 2 != 0) { 
-          // sort descending: alphabetically
-          rows.sort(function(a,b) { 
-            if (a.building.toUpperCase() < b.building.toUpperCase()) { 
-              return 1; 
-            } else if (a.building.toUpperCase() > b.building.toUpperCase()) { 
-              return -1; 
-            } else {
-              return 0;
-            }
-          });
+    function viewRooms(roomObj, name, size) {
+        window.scrollTo(0,document.body.scrollHeight);
+        $('#tmpmsg').html(name + ' - ' + (size > 0 ? size + ' person' : 'Other'));
+        $('#roomtable').css('display', 'table');
+        
+        $('#roomtable').find('tr').slice(1).remove();
+        let tbl = $('#roomtable')[0];
+        
+        let addRoom = function(roomID) {
+            let row = tbl.insertRow(-1);
+            let room = roomObj[roomID];
+            
+            row.insertCell(-1).innerHTML = roomID;
+            row.insertCell(-1).innerHTML = room.gender;
+            row.insertCell(-1).innerHTML = room.open.length;
+            row.insertCell(-1).innerHTML = JSON.stringify(room.open);
+            
+            return row;
+        };
+        
+        let validNums = getValidRoomIDs(roomObj);
+        
+        for (let i = 0; i < validNums.length; i++) {
+            $(addRoom(validNums[i])).addClass('goodrow');
         }
-      } 
-      if (d == "Room Number") {
-        clicks.roomNumber++;
-        // even number of clicks
-        if (clicks.roomNumber % 2 == 0) {
-          // sort ascending: alphabetically
-          rows.sort(function(a, b){
-            return d3.ascending(a.gender, b.gender);
-          });
-        // odd number of clicks  
-        } else if (clicks.roomNumber % 2 != 0) { 
-          // sort descending: alphabetically
-          rows.sort(function(a, b){
-            return d3.ascending(b.gender, a.gender);
-          });
-        }
-      } 
-      if (d == "Gender") {
-        clicks.gender++;
-        // even number of clicks
-        if (clicks.gender % 2 == 0) {
-          // sort ascending: alphabetically
-          rows.sort(function(a,b) {
-            return d3.ascending(a.gender, b.gender);
-          });
-        // odd number of clicks  
-        } else if (clicks.gender % 2 != 0) { 
-          // sort descending: alphabetically
-          rows.sort(function(a,b) {
-            return d3.ascending(b.gender, a.gender);
-          });
-        }
-      }
-      if (d == "Bed Spots") {
-        clicks.bedSpots++;
-        // even number of clicks
-        if (clicks.bedSpots % 2 == 0) {
-          // sort ascending: numerically
-          rows.sort(function(a,b) { 
-            if (+a.bedSpots < +b.bedSpots) { 
-              return -1; 
-            } else if (+a.bedSpots > +b.bedSpots) { 
-              return 1; 
-            } else {
-              return 0;
+        
+        let roomNums = Object.keys(roomObj);
+        
+        for (let i = 0; i < roomNums.length; i++) {
+            if (!validNums.includes(roomNums[i])) {
+                addRoom(roomNums[i]);
             }
-          });
-        // odd number of clicks  
-        } else if (clicks.bedSpots % 2 != 0) { 
-          // sort descending: numerically
-          rows.sort(function(a,b) { 
-            if (+a.bedSpots < +b.bedSpots) { 
-              return 1; 
-            } else if (+a.bedSpots > +b.bedSpots) { 
-              return -1; 
-            } else {
-              return 0;
-            }
-          });
-        }   
-      } 
-      if (d == "Room Capacity") {
-        clicks.roomCapacity++;
-        // even number of clicks
-        if (clicks.roomCapacity % 2 == 0) {
-          // sort ascending: alphabetically
-          rows.sort(function(a, b){
-            return d3.ascending(a.roomCapacity, b.roomCapacity);
-          });
-        // odd number of clicks  
-        } else if (clicks.roomCapacity % 2 != 0) { 
-          // sort descending: alphabetically
-          rows.sort(function(a, b){
-            return d3.ascending(b.roomCapacity, a.roomCapacity);
-          });
-        }   
-      }      
-    }) // end of click listeners
-});
-d3.select(self.frameElement).style("height", "780px").style("width", "1150px"); 
+        }
+    }
 </script>
+</body>
+</html>
