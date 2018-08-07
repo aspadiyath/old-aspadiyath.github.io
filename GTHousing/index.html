@@ -91,7 +91,7 @@ Format: # rooms that meet criteria / total # rooms<br>
         xhr.send();
     }
     //getRequest('https://crossorigin.me/http://housing.gatech.edu/rooms/FreeRooms.json?_=' + new Date().getTime(), function (resp) {
-    getRequest('http://housing.gatech.edu/rooms/FreeRooms.json?_=' + new Date().getTime(), function (resp) {
+    getRequest('https://housing.gatech.edu/rooms/FreeRooms.json?_=' + new Date().getTime(), function (resp) {
         let json = JSON.parse(resp);
         parseData(json);
     });
