@@ -57,7 +57,7 @@ free spot<span id="freeSpotsGrammar"></span>
     To go into the past, slide the slider until the time is near your time ticket. You can use this to predict where you will end up next year. To return to the present, slide the slider to the left-most position.
     <br>
     <input type="range" min="-1" max="1289" value="-1" id="slider" class="slider">
-    <div id="sliderupdated"></div>
+    <div id="sliderupdated"></div><div id="timedifference"></div>
 </div>
 
 <h1>Buildings</h1>
@@ -114,7 +114,13 @@ Format: # rooms that meet criteria / total # rooms<br>
                 json_to_use = data[slider.value];
                 getRequest('JSONS/' + json_to_use + '.json', function (resp) {
                     let data = JSON.parse(resp);
-                    parse2018Data(data);
+                    let lastUpdated = parse2018Data(data);
+
+                    var start = Date.parse('2018-03-07 12:00:00');
+                    var date = Date.parse(lastUpdated);
+
+                    var hoursdifference = (date-start)/(1000*60*60);
+                    $('#timedifference').html(" - " + hoursdifference.toString() + " hours since the starting time.");
                 });
             });
         } else {
@@ -347,6 +353,7 @@ Format: # rooms that meet criteria / total # rooms<br>
         $('#sliderupdated').html(lastUpdated);
         
         load2018Parsed(parsed);
+        return lastUpdated;
     }
     
     function load2018Parsed(parsed) {
