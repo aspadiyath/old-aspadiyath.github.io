@@ -103,9 +103,9 @@ Format: # rooms that meet criteria / total # rooms<br>
         getRequest('json_list.json', function (resp) {
             let data = JSON.parse(resp);
             json_to_use = data[this.value];
-            console.log(Number(this.value))
+            console.log(Number(slider.value))
             console.log(data)
-            console.log(data[Number(this.value)])
+            console.log(data[Number(slider.value)])
         });
 
         getRequest('JSONS/' + json_to_use + '.json', function (resp) {
