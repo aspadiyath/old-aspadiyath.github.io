@@ -22,6 +22,10 @@
         .goodrow {
             background-color: gold;
         }
+
+        .slider {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -49,7 +53,8 @@ Searching for
 </select>
 free spot<span id="freeSpotsGrammar"></span>
 <div id="FutureView">
-    <input type="range" min="-1" max="1289" value="-1" id="slider">
+    <input type="range" min="-1" max="1289" value="-1" id="slider" class="slider">
+    <div id="sliderupdated"></div>
 </div>
 
 <h1>Buildings</h1>
@@ -335,7 +340,7 @@ Format: # rooms that meet criteria / total # rooms<br>
             capBld[a.num].open.push(a.letter);
         }
         
-        $('#lastupdated').html(lastUpdated);
+        $('#sliderupdated').html(lastUpdated);
         
         load2018Parsed(parsed);
     }
