@@ -104,11 +104,10 @@ Format: # rooms that meet criteria / total # rooms<br>
         getRequest('json_list.json', function (resp) {
             let data = JSON.parse(resp);
             json_to_use = data[slider.value];
-        });
-        console.log(json_to_use);
-        getRequest('JSONS/' + json_to_use + '.json', function (resp) {
-            let data = JSON.parse(resp);
-            parse2018Data(data);
+            getRequest('JSONS/' + json_to_use + '.json', function (resp) {
+                let data = JSON.parse(resp);
+                parse2018Data(data);
+            });
         });
     }
     
