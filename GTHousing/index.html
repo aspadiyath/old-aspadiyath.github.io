@@ -57,7 +57,7 @@ free spot<span id="freeSpotsGrammar"></span>
     To go into the past, slide the slider until the time is near your time ticket. You can use this to predict where you will end up next year. To return to the present, slide the slider to the left-most position.
     <br>
     <input type="range" min="-1" max="1289" value="-1" id="slider" class="slider">
-    <div id="sliderupdated"></div><div id="timedifference"></div>
+    <div id="sliderupdated"></div>
 </div>
 
 <h1>Buildings</h1>
@@ -120,13 +120,16 @@ Format: # rooms that meet criteria / total # rooms<br>
                     var date = Date.parse(lastUpdated);
 
                     var hoursdifference = (date-start)/(1000*60*60);
-                    $('#timedifference').html(" - " + hoursdifference.toString() + " hours since the starting time.");
+                    var days = Math.floor(hoursdifference/24);
+                    var hours = Math.floor((hoursdifference/24 - Math.floor(hoursdifference/24))*24);
+                    $('#sliderupdated').html(lastUpdated + " - " + days.toString() + "days and " + hours + " hours since the starting time.");
                 });
             });
         } else {
             getRequest('https://cors-anywhere.herokuapp.com/https://housing.gatech.edu/rooms/FreeRooms.json?_=' + new Date().getTime(), function (resp) {
                 let json = JSON.parse(resp);
                 parseData(json);
+                $('#sliderupdated').html("");
             });
         }
     }
@@ -218,7 +221,6 @@ Format: # rooms that meet criteria / total # rooms<br>
         }
         
         $('#lastupdated').html(lastUpdated);
-        $('#sliderupdated').html(lastUpdated);
         
         loadParsed(parsed);
     }
@@ -349,8 +351,6 @@ Format: # rooms that meet criteria / total # rooms<br>
             
             capBld[a.num].open.push(a.letter);
         }
-        
-        $('#sliderupdated').html(lastUpdated);
         
         load2018Parsed(parsed);
         return lastUpdated;
