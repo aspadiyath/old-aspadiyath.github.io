@@ -99,7 +99,7 @@ Format: # rooms that meet criteria / total # rooms<br>
 
     var slider = document.getElementById("slider");
     slider.oninput = function() {
-        var json_to_use = '';
+        var json_to_use = '1520646730894';
         getRequest('json_list.json', function (resp) {
             let data = JSON.parse(resp);
             json_to_use = data[this.value];
