@@ -54,9 +54,11 @@ Searching for
 free spot<span id="freeSpotsGrammar"></span>
 <div id="FutureView">
     <br>
-    To go into the past, slide the slider until the time is near your time ticket. You can use this to predict where you will end up next year. To return to the present, slide the slider to the left-most position.
+    To go into the past, slide the slider until the time is near your time ticket. You can use this to predict your likelihood of getting the housing situation you want.
+    <br> 
+    To return to the present, slide the slider to the left-most position.
     <br>
-    <input type="range" min="-1" max="1289" value="-1" id="slider" class="slider">
+    <input type="range" min="-10" max="1289" value="-10" id="slider" class="slider">
     <div id="sliderupdated"></div>
 </div>
 
@@ -107,7 +109,7 @@ Format: # rooms that meet criteria / total # rooms<br>
 
     var slider = document.getElementById("slider");
     slider.oninput = function() {
-        if (slider.value != -1) {
+        if (slider.value >= 0) {
             var json_to_use = '1520646730894';
             getRequest('json_list.json', function (resp) {
                 let data = JSON.parse(resp);
