@@ -48,6 +48,9 @@ Searching for
     <option value="7">7</option>
 </select>
 free spot<span id="freeSpotsGrammar"></span>
+<div id="FutureView">
+    <input type="range" min="-1" max="1289" value="-1" id="slider">
+</div>
 
 <h1>Buildings</h1>
 Format: # rooms that meet criteria / total # rooms<br>
@@ -76,10 +79,6 @@ Format: # rooms that meet criteria / total # rooms<br>
     </tr>
 </table>
 </div>
-<br>
-<div id="FutureView">
-    <input type="range" min="0" max="1289" value="645" id="slider">
-</div>
 </div>
 <script>
     function getRequest(url, callback) {
@@ -100,15 +99,22 @@ Format: # rooms that meet criteria / total # rooms<br>
 
     var slider = document.getElementById("slider");
     slider.oninput = function() {
-        var json_to_use = '1520646730894';
-        getRequest('json_list.json', function (resp) {
-            let data = JSON.parse(resp);
-            json_to_use = data[slider.value];
-            getRequest('JSONS/' + json_to_use + '.json', function (resp) {
+        if (slider.value != -1) {
+            var json_to_use = '1520646730894';
+            getRequest('json_list.json', function (resp) {
                 let data = JSON.parse(resp);
-                parse2018Data(data);
+                json_to_use = data[slider.value];
+                getRequest('JSONS/' + json_to_use + '.json', function (resp) {
+                    let data = JSON.parse(resp);
+                    parse2018Data(data);
+                });
             });
-        });
+        } else {
+            getRequest('https://cors-anywhere.herokuapp.com/https://housing.gatech.edu/rooms/FreeRooms.json?_=' + new Date().getTime(), function (resp) {
+                let json = JSON.parse(resp);
+                parseData(json);
+            });
+        }
     }
     
     function readLetters(txt) {
