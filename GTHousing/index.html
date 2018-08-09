@@ -76,6 +76,7 @@ Format: # rooms that meet criteria / total # rooms<br>
     </tr>
 </table>
 </div>
+<br>
 <div id="FutureView">
     <input type="range" min="0" max="1289" value="645" id="slider">
 </div>
@@ -102,12 +103,9 @@ Format: # rooms that meet criteria / total # rooms<br>
         var json_to_use = '1520646730894';
         getRequest('json_list.json', function (resp) {
             let data = JSON.parse(resp);
-            json_to_use = data[this.value];
-            console.log(Number(slider.value))
-            console.log(data)
-            console.log(data[Number(slider.value)])
+            json_to_use = data[slider.value];
         });
-
+        console.log(json_to_use);
         getRequest('JSONS/' + json_to_use + '.json', function (resp) {
             let data = JSON.parse(resp);
             parse2018Data(data);
@@ -254,6 +252,138 @@ Format: # rooms that meet criteria / total # rooms<br>
     }
     
     function viewRooms(roomObj, name, size) {
+        window.scrollTo(0,document.body.scrollHeight);
+        $('#tmpmsg').html(name + ' - ' + (size > 0 ? size + ' person' : 'Other'));
+        $('#roomtable').css('display', 'table');
+        
+        $('#roomtable').find('tr').slice(1).remove();
+        let tbl = $('#roomtable')[0];
+        
+        let addRoom = function(roomID) {
+            let row = tbl.insertRow(-1);
+            let room = roomObj[roomID];
+            
+            row.insertCell(-1).innerHTML = roomID;
+            row.insertCell(-1).innerHTML = room.gender;
+            row.insertCell(-1).innerHTML = room.open.length;
+            row.insertCell(-1).innerHTML = JSON.stringify(room.open);
+            
+            return row;
+        };
+        
+        let validNums = getValidRoomIDs(roomObj);
+        
+        for (let i = 0; i < validNums.length; i++) {
+            $(addRoom(validNums[i])).addClass('goodrow');
+        }
+        
+        let roomNums = Object.keys(roomObj);
+        
+        for (let i = 0; i < roomNums.length; i++) {
+            if (!validNums.includes(roomNums[i])) {
+                addRoom(roomNums[i]);
+            }
+        }
+    }
+
+    function parse2018Data(json) {
+        let parsed = {};
+        
+        let getBld = function (bid) {
+            
+            return parsed[bid];
+        };
+        
+        let lastUpdated = null;
+    
+        for (let i = 0; i < json.length; i++) {
+            let entry = json[i];
+            let bid = entry.BuildingID;
+            if (!(bid in parsed)) {
+                parsed[bid] = {
+                    name: entry.BuildingName,
+                    rooms: {}
+                };
+            }
+            
+            if (!lastUpdated) lastUpdated = entry.LastUpdated;
+            
+            let bld = parsed[bid];
+            
+            let a = readLetters(entry.RoomNumber);
+            let cap = parseInt(entry.Capacity.substring(0, 1));
+            if (isNaN(cap)) cap = -1;
+            
+            if (!(cap in bld.rooms)) {
+                bld.rooms[cap] = {};
+            }
+            
+            let capBld = bld.rooms[cap];
+            
+            if (!(a.num in capBld)) {
+                capBld[a.num] = {
+                    gender: entry.Gender,
+                    open: []
+                };
+            }
+            
+            capBld[a.num].open.push(a.letter);
+        }
+        
+        $('#lastupdated').html(lastUpdated);
+        
+        load2018Parsed(parsed);
+    }
+    
+    function load2018Parsed(parsed) {
+        parsedData = parsed;
+        $('#loading').css('display', 'none');
+        $('#main').css('display', 'block');
+        console.log(parsed);
+        reload2018Data();
+    }
+    
+    function reload2018Data() {
+        //Update settings
+        settings.thresh = parseInt($('#selectThresh').find(':selected').val());
+        $('#freeSpotsGrammar').html(settings.thresh == 1 ? '' : 's');
+        settings.gender = $('#selectGender').find(':selected').val();
+        
+        $('#buildings').find('tr').slice(1).remove();
+        let tbl = $('#buildings')[0];
+        
+        let bids = Object.keys(parsedData);
+        for (let i = 0; i < bids.length; i++) {
+            let bld = parsedData[bids[i]];
+            
+            let row = tbl.insertRow(-1);
+            row.insertCell(-1).innerHTML = bld.name;
+            
+            for (let rawSize = 2; rawSize <= 8; rawSize++) {
+                let size = rawSize == 8 ? -1 : rawSize;
+                let cell = row.insertCell(-1);
+                cell.style.background = 'gray';
+                if (size in bld.rooms) {
+                    cell.style.background = 'green';
+                    $(cell).addClass('clickable');
+                    const capBld = bld.rooms[size];
+                    
+                    let numValid = getValidRoomIDs(capBld).length;
+                    if (numValid > 0) {
+                        cell.style['border'] = '3px solid gold';
+                    }
+                    
+                    cell.innerHTML = numValid + ' / ' + Object.keys(capBld).length;
+                    
+                    $(cell).click(function() {
+                        view2018Rooms(capBld, bld.name, size);
+                    });
+                }
+            }
+        }
+    }
+    
+    function view2018Rooms(roomObj, name, size) {
         window.scrollTo(0,document.body.scrollHeight);
         $('#tmpmsg').html(name + ' - ' + (size > 0 ? size + ' person' : 'Other'));
         $('#roomtable').css('display', 'table');
