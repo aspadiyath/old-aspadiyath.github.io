@@ -76,6 +76,9 @@ Format: # rooms that meet criteria / total # rooms<br>
     </tr>
 </table>
 </div>
+<div id="FutureView">
+    <input type="range" min="0" max="1289" value="645" id="slider">
+</div>
 </div>
 <script>
     function getRequest(url, callback) {
@@ -93,6 +96,20 @@ Format: # rooms that meet criteria / total # rooms<br>
         let json = JSON.parse(resp);
         parseData(json);
     });
+
+    var slider = document.getElementById("slider");
+    slider.oninput = function() {
+        let json_to_use = '';
+        getRequest('json_list.json', function (resp) {
+            let data = JSON.parse(resp);
+            json_to_use = data[this.value];
+        });
+
+        getRequest('JSONS/' + json_to_use + '.json', function (resp) {
+            let data = JSON.parse(resp);
+            parse2018Data(data);
+        });
+    }
     
     function readLetters(txt) {
         let i = 0;
