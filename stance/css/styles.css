@@ -1,0 +1,51 @@
+body {
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    font-size: 26px;
+    color: black;
+    background-color: #FAFAFA;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+h1 {
+  font-size: 120px;
+  text-decoration: none;
+  font-weight: normal;
+  text-align: center;
+  margin-bottom: 15px;
+  margin-top: 20px;
+}
+
+h2 {
+  font-size: 52px;
+  text-decoration: none;
+  font-weight: normal;
+  text-align: center;
+  margin-top: 10px;
+}
+
+h3 {
+  font-size: 38px;
+  text-decoration: none;
+  font-weight: normal;
+  text-align: center;
+  margin-top: 10px;
+}
+
+h4 {
+  font-size: 22px;
+  text-decoration: none;
+  font-weight: normal;
+  text-align: center;
+}
+
+a {
+  color: red;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #cc0000;
+}
