@@ -2,14 +2,54 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" href="images/icon.jpg">
+    <link rel="icon" href="images/icon.png">
     <script src="js/main.js"></script>
     <title>stance</title>
 </head>
 <body>
     <h1><a href="stance.html">stance</a></h1>
-    <h4>Aadarsh Padiyath, Roy Finkelberg, Jorge Betancourt, Emilee Sisson</h4>
+    <h4>Aadarsh Padiyath, Emilee Sisson, Jorge Betancourt, Roy Finkelberg</h4>
     <h3>Problem Statement</h3>
-    <h3>Approach</h3>
+    <p>Current pose estimation techniques are able to map a wire frame onto video of a moving person. We present an application of 2D pose estimation for assessment of proper workout form. Given input video of a person performing an exercise, our system will compare the subject's wire frame with that of a template representing "ideal" form. The system will then superimpose the template with the input and return the resulting overlay with a performance metric representing the similarity between the two.</p>
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Input
+                    </td>
+                    <td>Template
+                    </td>
+                    <td>Overlay
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="images/input.png" height="351" width="170">
+                    </td>
+                    <td><img src="images/muscleman.png" height="351" width="170">
+                    </td>
+                    <td><img src="images/overlay.png" height="351" width="170">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <h3>Glossary</h3>
+    <ul>
+        <li><b>Benchmark Zone</b>: To account for differences between individuals we only assess performance at a few key points in the movement. These are benchmark zones.</li>
+        <li><b>Milestone Skeleton</b>: The template skeleton corresponding to a benchmark zone.</li>
+    </ul>
+    <h3>Approach</h3> <!--Describe the technical approach you plan to employ.-->
+    <p>
+        <ol>
+            <li>For each frame in an input video, compute a wire skeleton for the person in the frame</li>
+            <li>Compare each skeleton to "milestone skeletons" to determine if the person is in a benchmark zone</li>
+            <li>To determine when the person is in a benchmark zone, compute the peaks of the similarity scores from the previous step</li>
+            <li>Sample a window of skeletons centered at these peaks</li>
+            <li>Compute the average similarity over the window with the milestone skeleton</li>
+            <li>Compute the performance score to be a weighted sum of the similarities at each benchmark zone</li>
+        </ol>
+    </p> 
     <h3>Experiments and Results</h3>
+        <p>
+            <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">OpenPose</a> is an open source framework for real-time detection of keypoints for human pose estimation. </p>
 </body>
