@@ -50,3 +50,20 @@ a {
 a:hover {
   color: #cc0000;
 }
+
+.menu {
+  border-collapse: collapse;
+  top: 86vh;
+  position: fixed;
+  float: left;
+  left:0;
+}
+
+.html {
+  height: 52px;
+  border-right: 57px solid #1a0000;
+  border-left: 57px solid #1a0000;
+  font-size: 21px;
+  width: auto;
+  background-color: #1a0000;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="images/icon.png">
+    <!-- <script src="js/main.js"></script> -->
+    <title>stance</title>
+</head>
+<body>
+    <h1><a href="stance.html">stance</a></h1>
+    <h4><a href="https://github.com/RFinkelberg/Stance">A</a>adarsh Padiyath, <a href="https://github.com/RFinkelberg/Stance">E</a>milee Sisson, <a href="https://github.com/RFinkelberg/Stance">J</a>orge Betancourt, <a href="https://github.com/RFinkelberg/Stance">R</a>oy Finkelberg</h4>
+    <h3>Project Planning</h3>
+    <h4>Milestone 1 - Setup - Video, Photos, and Motion</h4>
+    <b>template_fit.py</b><br>
+    input: two photos of front and profile of user and benchmark zones<br>
+    output: template skeletons in the benchmark zones<br>
+    tasks:
+    <ul>
+        <li>compute wire skeletons / body ratios of user</li>
+        <li>for each benchmark zone, compute template skeletons using body ratios</li>
+    </ul>
+    <b>etl.py</b><br>
+    input: video of user performing motion<br>
+    output: ordered set of wire skeletons for every frame<br>
+    tasks:
+    <ul>
+        <li>separate video into frames</li>
+        <li>preprocessing on frames to get good results (color correcting, etc.)</li>
+        <li>run OpenPose on every frame</li>
+    </ul>
+    <b>MOTION.py</b><br>
+    for any particular motion:<br>
+    output: 
+    <ul>
+        <li>benchmark zones</li>
+        <li>skeleton similarity function</li>
+        <li>scoring function</li>
+    </ul>
+    <h4>Milestone 2 - Fit</h4>
+    <b>fit.py</b><br>
+    input: ordered set of wire skeletons for every frame and similarity function<br>
+    output: map from template skeleton to user skeleton for every benchmark zone<br>
+    tasks:
+    <ul>
+        <li>use skeleton similarity function to compute similarities for every frame and every benchmark zone</li>
+        <li>find peaks of similarities for every benchmark zone and store in map</li>
+    </ul>
+    <h4>Milestone 3 - Score</h4>
+    <b>score.py</b><br>
+    input: map from template skeleton to user skeleton for every benchmark zone and scoring function<br>
+    output: Error score<br>
+    tasks:
+    <ul>
+        <li>combine similarities using scoring function</li>
+    </ul>
+    <h4>Milestone 4 - Overlay</h4>
+    <b>overlay.py</b><br>
+    input: map from template skeleton to user skeleton for every benchmark zone and scoring function<br>
+    output: display template skeleton on top of user skeleton<br>
+    tasks:
+    <ul>
+        <li>overlays template skeletons on user's benchmark photos</li>
+        <li>overlays template on user videos</li>
+    </ul>
+</body>
