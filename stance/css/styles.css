@@ -67,3 +67,20 @@ a:hover {
   width: auto;
   background-color: #1a0000;
 }
+
+.githublogo {
+  height: 52px;
+  border-right: 10px solid #1a0000;
+  border-left: 10px solid #1a0000;
+  font-size: 21px;
+  width: auto;
+  background-color: #1a0000;
+}
+
+.githublogo:hover {
+  color: #cc0000;
+}
+
+td img {
+  vertical-align: top;
+}

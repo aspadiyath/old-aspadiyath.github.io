@@ -10,7 +10,9 @@
     <table class="menu">
         <tbody>
           <tr>
+            <td class="html"><a href="proposal.html">proposal</a></td>
             <td class="html"><a href="planning.html">planning</a></td>
+            <td class="html"><a href="https://github.com/RFinkelberg/Stance"><img class="githublogo" fill="#f00" src="images/github_logo.svg"></a></td>
           </tr>
         </tbody>
     </table>
@@ -37,53 +39,5 @@
             </tbody>
         </table>
     </center>
-    <h3>Glossary</h3>
-    <ul>
-        <li><b>Benchmark Zone</b>: To account for differences between individuals we only assess performance at a few key points in the movement. These are benchmark zones.</li>
-        <li><b>Template Skeleton</b>: The wire skeleton corresponding to ideal form in a benchmark zone.</li>
-        <!--Dynamic Time Warping-->
-    </ul>
-    <h3>Approach</h3> <!--Describe the technical approach you plan to employ.-->
-    <p>
-        <ol>
-            <li>For each frame in an input video, compute a wire skeleton for the person in the frame</li>
-            <li>Compare each skeleton to "template skeletons" to determine if the person is in a benchmark zone</li>
-            <li>To determine when the person is in a benchmark zone, compute the peaks of the similarity scores from the previous step</li>
-            <li>Sample a window of skeletons centered at these peaks</li>
-            <li>Compute the average similarity over the window with the template skeleton</li>
-            <li>Compute the performance score to be a weighted sum of the similarities at each benchmark zone</li>
-        </ol>
-    </p> 
-    <h3>Experiments and Results</h3>
-        <h4>Datasets</h4>
-        Since our approach is mostly analytical, we do not need a large dataset. The main purpose of our dataset is to be used to create customized individual template skeletons for each user. We will be collecting our dataset by scraping the internet for examples of ideal form for the workouts we plan to assess. These will be used to then create the template skeletons.
-
-        <h4>Templates</h4>
-        Recall we are computing similarity between a user's wire skeleton and template
-        skeletons. In OpenPose, the wire skeleton is represented as an array of keypoints corresponding to joints. Our system defines an object representation of wire skeletons which holds relationships (vectors) between these keypoints, this makes them scale invariant. Given this, we can compute the template skeletons analytically. From our dataset we determine the "correct" form at each benchmark zone. Generally this means defining an angular or scale relationship between the vectors that make up the skeleton. This relationship is unique and manually tuned for each benchmark zone in each workout. Knowing this relationship, we can transform an individual's skeleton to what it would should look like under correct form. This becomes the individual's template skeleton for this benchmark zone.
-
-        <h4>Implementation</h4>
-        <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">OpenPose</a> is an open source framework for real-time detection of keypoints for human pose estimation. We then use the keypoints obtained from this system to create the wire skeletons.
-
-        We will also be implementing the similarity and performance scores.
-
-        <h4>Experimentation</h4>
-        In weightlifting, good form is very important, but judging it is very qualitative. We are attempting to quantify how "good" someone's form is. To do so requires answering the following questions.<br>
-
-        <br><b>Can we make a wire skeleton that follows a person, frame by frame?</b> This has been shown to be possible by the makers of OpenPose, however it is necessary to confirm that it will work on our data.
-
-        <br><b>Is it possible to customize a template skeleton for each individual?</b> If our system is able to do this, then we know this is possible. If our system fails this, we don't know if it is or isn't possible, but we do know it is as least as hard as we made it.
-
-        <br><b>Can the user's template skeletons accurately determine which part of the movement the user is in?</b> If we are able to create benchmark zones from our datasets and succeed the previous experiment, then this question can be easily answered.
-
-        <br><b>Can our system contrast a person with bad form, from a person with good form?</b> If the approach we outlined can correctly quantify how proper someone's form is, then yes.
-
-        <!-- <b>Using pose estimation, can we quantify how good someone's form is?</b> If the approach we outlined can correctly quantify how good someone's form is, then yes. 
-        This project also has the potential to answer more abstract questions about representation theory, outside of the domain of weightlifting. Namely,
-        <b>How do we express the notion of similarity between high order concepts such as choreographed motion?</b> We, as people, can easily identify two weightlifters or dancers that are performing similar motions and routines, but how do we encode that into a mathematical representation, or something learnable?  -->
-        
-        <h4>References</h4>
-        <p><a href="https://arxiv.org/abs/1611.08050">Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields</a> - Cao et al. 2017</p>
-        <p><a href="https://arxiv.org/abs/1704.07809">Hand Keypoint Detection in Single Images using Multiview Bootstrapping</a> - Simon et al. 2017</p>
-        <p><a href="https://arxiv.org/abs/1602.00134">Convolutional Pose Machines</a> - Wei et al. 2016</p>
-</body>
+    
+    </body>
