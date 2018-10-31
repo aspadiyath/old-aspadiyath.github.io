@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="images/icon.png">
+    <!-- <script src="js/main.js"></script> -->
+    <title>stance</title>
+</head>
+<body>
+    <div class="bar"></div>
+    <table class="menu">
+        <tbody>
+          <tr>
+            <td class="html"><a href="proposal.html">proposal</a></td>
+            <td class="html"><a href="planning.html">planning</a></td>
+            <td class="html"><a href="progress.html">progress</a></td>
+            <td class="html"><a href="https://github.com/RFinkelberg/Stance">code</a></td>
+          </tr>
+        </tbody>
+    </table>
+    <h1><a href="stance.html">stance</a></h1>
+    <h4>Aadarsh Padiyath, Emilee Sisson, Jorge Betancourt, Roy Finkelberg</h4>
+    <h3>Abstract</h3>
+    <p>Determining the similarity between abstract scenes is a difficult problem in cognitive computing. Humans can look at two images or videos and immediately tell if they are similar, but this intuition is difficult to encode.
+    <br><br>
+    We present an application of 2D human pose estimation for accessing similarity between motions in the space of weightlifting. Given input video of a person performing an exercise, our system will access their form. That is, it will give a similarity score between the user's motion and that motion performed "ideally".</p>
+    <h3>Teaser Figure</h3>
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Input</td>
+                    <td>Template</td>
+                    <td>Overlay</td>
+                </tr>
+                <tr>
+                    <td><img src="images/input.png" height="351" width="170">
+                    </td>
+                    <td><img src="images/muscleman.png" height="351" width="170">
+                    </td>
+                    <td><img src="images/overlay.png" height="351" width="170">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <h3>Introduction</h3>
+    <p>Current pose estimation techniques are able to map a wire frame onto video of a moving person. We present an application of 2D pose estimation for assessment of proper workout form. Given input video of a person performing an exercise, our system will compare the subject's wire frame with that of a template representing "ideal" form. The system will then superimpose the template with the input and return the resulting overlay with a performance metric representing the similarity between the two.</p>
+    <h3>Approach</h3>
+    <p>
+        <ol>
+            <li>For each frame in an input video, compute a wire skeleton for the person in the frame</li>
+            <li>Compare each skeleton to "template skeletons" to determine if the person is in a benchmark zone</li>
+            <li>To determine when the person is in a benchmark zone, compute the peaks of the similarity scores from the previous step</li>
+            <li>Sample a window of skeletons centered at these peaks</li>
+            <li>Compute the average similarity over the window with the template skeleton</li>
+            <li>Compute the performance score to be a weighted sum of the similarities at each benchmark zone</li>
+        </ol>
+        Full flow diagram and modules are on the <a href="planning.html">planning</a> page.
+        <br><br>
+        We have completed the sections in green.<br><br>
+        <center><img src="images/Progress_diagram.png"/></center>
+        <h4>Major Design Decisions</h4>
+        <p><b>Skeleton Representation - </b>The problem with representing skeletons as the coordinates as their keypoints is that they are now sensitive to the scale and orientation of the subject. Our system represents skeletons as sets of relationships between points (i.e. distance, relative angle, ...). Looking at these relationships rather than the absolute points makes our system robust to changes in the composition of the shot.</p>
+        <p><b>Sampling Frequency - </b>Fitting a skeleton to every frame in a video becomes intractable as videos get longer and have higher quality. Since not every frame is important, we decided to sample at some regular interval which is a free parameter.</p>
+    </p> 
+    <h3>Experiments and Qualitative Results</h3>
+    <!--Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why?-->
+    <p>When evaluating the performance of our system with regard to fitting skeletons, we had to do so qualitatively. A quantitative measure of this performance would require some notion of a "perfectly fit skeleton." If we could compute such a thing, we would be using it to solve our problem.</p>
+    <!--Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach.-->
+    <p>We were able to use the OpenCV Software along with a COCO object detection neural network to detect the skeleton of a user in a single photo.</p>
+    <center>
+        <img src="images/man-skeleton.jpg" height="300px">
+    </center>
+    <h4>Extension to Adversarial Video</h4>
+    <p>We extended this process to detect the skeletons of a user performing a squatting exercise. This video is adversarial because of the color composition of the video - the background is very low contrast with the person's clothing.</p>
+    <center>
+        <embed src="images/output.swf" height="300px" width="530px"/>
+    </center>
+    <p>Dispite the nature of the input, the system tracked the person very well. The front leg is stable enough to use in similarity calculations.</p>
+    <h4>Partial occlusion</h4>
+    <p>We decided to test the neural net on multiple of our own images to see if we could achieve good results. We set up the images with a consistent subject against a non-trivial background. In real-world scenarios, occlusion is a problem. In squatting specifically, the plates and squat rack will be blocking the view of the camera.</p>
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <td><img src="images/Roy1.jpg" height="351" width="200">
+                    </td>
+                    <td><img src="images/Roy2.jpg" height="351" width="200">
+                    </td>
+                    <td><img src="images/Roy3.jpg" height="351" width="200">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <p>We found it performed well even with differing amounts of partial occulusion and poses.</p>
+    <h4>Viewing Angles</h4>
+    <p>Our system makes the assumption of a consistent viewing angle of the user's motion. One major decision we had to make was choosing that viewing angle.</p>
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <td><img src="images/Aadarsh1.jpg" height="551" width="200">
+                    </td>
+                    <td><img src="images/Aadarsh2.jpg" height="551" width="200">
+                    </td>
+                    <td><img src="images/Aadarsh3.jpg" height="551" width="200">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <p>Initially we thought that a profile view would be best because it removes depth - a major obstacle in pose estimation. After running these tests, we found that performance was similar across differing viewing angles.</p>
+    <h4>Subject and Obstacle</h4>
+    <p>One problem we foresaw with using the system in a real-world environment is that in the real world, there are often other people. We wanted to see to what extent does another person in the shot affect the quality of the output.</p>
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <td><img src="images/Depth1.jpg" height="351" width="200">
+                    </td>
+                    <td><img src="images/Depth2.jpg" height="351" width="200">
+                    </td>
+                    <td><img src="images/Depth3.jpg" height="351" width="200">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <p>If you have an obstacle close to the camera, keypoints will be split between the two, making for unusable data. If you have an obstacle in the background of the frame, the system might interpret it as the subject.</p>
+    <h3>Mid-Project Conclusion and Future Work</h3>
+    <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better.-->
+    <p>From our experiments, we concluded that our system is very robust to most common issues with the exception of multiple people. There exists methods for <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">multi-person pose estimation</a>, however these are computationally expensive and unnecessary for our application.</p>
+    <p>All that remains to be done is:
+        <ul>
+            <li>Video Preprocessing pipeline (color-correction, centering the subject, etc)</li>
+            <li>Define the benchmark zones and similarity scores for our motion</li>
+            <li>Display results using an overlay of template skeletons and user skeletons onto the input video</li>
+            <li>Define and report the overall performance score of the user performing the motion</li>
+        </ul>
+    </p>
+    <h3>References</h3>
+    <p><a href="https://arxiv.org/abs/1611.08050">Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields</a> - Cao et al. 2017</p>
+    <p><a href="https://arxiv.org/abs/1704.07809">Hand Keypoint Detection in Single Images using Multiview Bootstrapping</a> - Simon et al. 2017</p>
+    <p><a href="https://arxiv.org/abs/1602.00134">Convolutional Pose Machines</a> - Wei et al. 2016</p>
+    <p><a href="http://cocodataset.org/#home">COCO Object Detector</a> - Common Objects in Context/p>
+    </body>
