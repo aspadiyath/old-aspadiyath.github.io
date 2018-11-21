@@ -43,12 +43,12 @@
     <h3>Using Pickle Files</h3>
     There are three pickle files each containing precomputed skeletons for each frame of the videos.
     <ul>
-        <li>0: example/squat.mp4</li>
-        <li>1: example/squatbad.mp4</li>
-        <li>2: example/squatpoop.mp4</li>
+        <li>example/squat.mp4</li>
+        <li>example/squatbad.mp4</li>
+        <li>example/squatpoop.mp4</li>
     </ul>
     <pre>
-        >>> python main.py --use_pickle 0
-        >>> python main.py -p 2
+        >>> python main.py -v example/squatbad.mp4 -p
+        >>> python main.py -v example/squatbad.mp4 --use_pickle
     </pre>
     </body>
