@@ -38,7 +38,21 @@
     <h3>Quick Start</h3>
     <pre>
         >>> cd stance/
-        >>> python main.py -v example/squat.mp4
+        >>> python main.py -f example/squat.mp4
+    </pre>
+    <h3>Usage</h3>
+    <pre>
+        usage: main.py [-h] [-f VIDEO_PATH] [-v] [-p]
+
+        optional arguments:
+          -h, --help            show this help message and exit
+          -f VIDEO_PATH, --video_path VIDEO_PATH
+                                filepath to video containing the user performing a
+                                motion
+          -v, --verbose         Verbosity level. 1 (v) displays info, 2 (vv) displays
+                                debug logs
+          -p, --use_pickle      uses the pickle file corresponding to the video file
+                                given
     </pre>
     <h3>Using Pickle Files</h3>
     There are three pickle files each containing precomputed skeletons for each frame of the videos.
@@ -48,7 +62,7 @@
         <li>example/squatpoop.mp4</li>
     </ul>
     <pre>
-        >>> python main.py -v example/squatbad.mp4 -p
-        >>> python main.py -v example/squatbad.mp4 --use_pickle
+        >>> python main.py -f example/squatbad.mp4 -p
+        >>> python main.py -f example/squatbad.mp4 --use_pickle
     </pre>
     </body>
