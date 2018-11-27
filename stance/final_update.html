@@ -66,10 +66,91 @@
     </p> 
     <h3>Experiments and Qualitative Results</h3>
     <!--Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why?-->
+    <!--Provide details about the experimental set up (number of images/videos, number of datasets you experimented with, train/test split if you used machine learning algorithms, etc.). Describe the evaluation metrics you used to evaluate how well your approach is working. Include clear figures and tables, as well as illustrative qualitative examples if appropriate. Be sure to include obvious baselines to see if your approach is doing better than a naive approach (e.g. for classification accuracy, how well would a classifier do that made random decisions?). Also discuss any parameters of your algorithms, and tell us how you set the values of those parameters. You can also show us how the performance varies as you change those parameter values. Be sure to discuss any trends you see in your results, and explain why these trends make sense. Are the results as expected? Why?-->
+    <p>When evaluating the performance of our system with regard to fitting skeletons, we had to do so qualitatively. A quantitative measure of this performance would require some notion of a "perfectly fit skeleton." If we could compute such a thing, we would be using it to solve our problem.</p>
     <!--Show several visual examples of inputs/outputs of your system (success cases and failures) that help us better understand your approach.-->
+    <p>We were able to use the OpenCV Software along with a COCO object detection neural network to detect the skeleton of a user in a single photo.</p>
+    <center>
+        <img src="images/man-skeleton.jpg" height="300px">
+    </center>
+    <div id="squatvideo">
+        <h4>Extension to Adversarial Video</h4>
+        <p>We extended this process to detect the skeletons of a user performing a squatting exercise. This video is adversarial because of the color composition of the video - the background is very low contrast with the person's clothing.</p>
+        <center>
+            <embed src="images/output.swf" height="300px" width="530px"/>
+        </center>
+    </div>
+    <p>Dispite the nature of the input, the system tracked the person very well. The front leg is stable enough to use in similarity calculations.</p>
+    <h4>Partial occlusion</h4>
+    <p>We decided to test the neural net on multiple of our own images to see if we could achieve good results. We set up the images with a consistent subject against a non-trivial background. In real-world scenarios, occlusion is a problem. In squatting specifically, the plates and squat rack will be blocking the view of the camera.</p>
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <td><img src="images/Roy1.JPG" height="351" width="200">
+                    </td>
+                    <td><img src="images/Roy2.JPG" height="351" width="200">
+                    </td>
+                    <td><img src="images/Roy3.JPG" height="351" width="200">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <p>We found it performed well even with differing amounts of partial occulusion and poses.</p>
+    <h4>Viewing Angles</h4>
+    <p>Our system makes the assumption of a consistent viewing angle of the user's motion. One major decision we had to make was choosing that viewing angle.</p>
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <td><img src="images/Aadarsh1.JPG" height="551" width="200">
+                    </td>
+                    <td><img src="images/Aadarsh2.JPG" height="551" width="200">
+                    </td>
+                    <td><img src="images/Aadarsh3.JPG" height="551" width="200">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <p>Initially we thought that a profile view would be best because it removes depth - a major obstacle in pose estimation. After running these tests, we found that performance was similar across differing viewing angles.</p>
+    <h4>Subject and Obstacle</h4>
+    <p>One problem we foresaw with using the system in a real-world environment is that in the real world, there are often other people. We wanted to see to what extent does another person in the shot affect the quality of the output.</p>
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <td><img src="images/Depth1.JPG" height="351" width="200">
+                    </td>
+                    <td><img src="images/Depth2.JPG" height="351" width="200">
+                    </td>
+                    <td><img src="images/Depth3.JPG" height="351" width="200">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+    <p>If you have an obstacle close to the camera, keypoints will be split between the two, making for unusable data. If you have an obstacle in the background of the frame, the system might interpret it as the subject.</p>
+    <h4>Scoring</h4>
+    For the video shown <a href="#squatvideo">here</a>, we compared the similarity of each wire skeleton to the benchmark zones of the "squat" motion and plotted it.
+    <center>
+        <img src="images/find_benchmark_zones_wo_gauss.png"/>
+    </center>
+    We instantly saw the problem of having a symmetric motion with almost symmetric benchmark zones, we would need to separate the motion into multiple sections. We decided to solve this by adding gaussians to each curve where the mean would be approximately where in the video the user should be performing that action. The plot below clearly shows the peaks of where the benchmark zones of this specific user's motion is.
+    <center>
+        <img src="images/find_benchmark_zones_w_gauss.png"/>
+    </center>
     <h3>Conclusion and Future Work</h3>
     <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better.-->
-    
+    <p>From our experiments, we concluded that our system is very robust to most common issues with the exception of multiple people. There exists methods for <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">multi-person pose estimation</a>, however these are computationally expensive and unnecessary for our application.</p>
+    <p>Possible Extensions:
+        <ul>
+            <li>3D Pose Estimation for recording at any angle</li>
+            <li>Automated benchmark zone finder</li>
+            <li>Use <a href="http://densepose.org/">DensePose</a> to get finer detailed skeletons</li>
+        </ul>
+    </p>
     <h3>References</h3>
     <p><a href="https://arxiv.org/abs/1611.08050">Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields</a> - Cao et al. 2017</p>
     <p><a href="https://arxiv.org/abs/1704.07809">Hand Keypoint Detection in Single Images using Multiview Bootstrapping</a> - Simon et al. 2017</p>
