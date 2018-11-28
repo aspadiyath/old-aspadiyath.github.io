@@ -148,14 +148,64 @@
     </p>
     <h4>Qualitative Results</h4>
     <!--This got this score for this reason-->
+    <center>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Video</th>
+                    <th>Score</th>
+                    <th>Discussion</th>
+                </tr>
+                <tr>
+                    <td><embed src="images/squat_output_video.swf" height="300px" width="530px"/></td>
+                    <td>97.9%</td>
+                    <td>This was the main template we used, so it should theoretically have 100% accuracy. In reality, it has a little less because our addition of the gaussian noise makes the algorithm miss the middle benchmark zone slightly.</td>
+                </tr>
+                <tr>
+                    <td><embed src="images/squatgood_output_video.swf" height="300px" width="530px"/></td>
+                    <td>99.1%</td>
+                    <td>This is an example of a user performing a "good" squat that the algorithm also agreed was good. The keypoint detector is shown to be robust to occlusion and noise.</td>
+                </tr>
+                <tr>
+                    <td><embed src="images/squatbad_output_video.swf" height="300px" width="530px"/></td>
+                    <td>87.8%</td>
+                    <td>This video is an example of a user that scores well with our algorithm, but is doing the squatting motion incorrectly. They are sitting too far down, and butt juts out when ascending. However, since all of these mistakes are made inbetween benchmark zones, the system still decides to score it well. This shows the limitations of using benchmark zones to score the motion.</td>
+                </tr>
+                <tr>
+                    <td><embed src="images/squatpoop_output_video.swf" height="300px" width="530px"/></td>
+                    <td>80.1%</td>
+                    <td>This video is an example of a user performing a "bad" squat and the system giving the user a bad score.</td>
+                </tr>
+                <tr>
+                    <td><embed src="images/walk_output_video.swf" height="300px" width="530px"/></td>
+                    <td>45.0</td>
+                    <td>This is a degenerate case where the user is performing an entirely different motion. Since the system gave it a low score, we can consider this a success. The algorithm was able to distinguish between completely different motions.</td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
     <h3>Conclusion and Future Work</h3>
     <!-- Conclusion would likely make the same points as the abstract. Discuss any future ideas you have to make your approach better.-->
-    <p>From our experiments, we concluded that our system is very robust to most common issues with the exception of multiple people. There exists methods for <a href="https://github.com/CMU-Perceptual-Computing-Lab/openpose">multi-person pose estimation</a>, however these are computationally expensive and unnecessary for our application.</p>
+    <p>
+        We had two main questions after coming up with this project: How well can we distinguish between two separate motions? How well can we algorithmically grade someone's workout form?
+
+        We were able to create a reasonable judge of workout form under "ideal" conditions. However, this required a few strong assumptions.
+        <ul>
+            <li><b>We only grade half the body.</b> We did this because the keypoint detector was having diffculty finding the keypoints of the hidden limbs, and would then guess where the keypoint was. This would give a lot of noise to the scored result.</li>
+            <li><b>The video is a fluid motion and encompasses only the motion in question.</b> This is necessary because when we add gaussians to the motions, it doesn't take into account where the person is in the motion. So if a user were to try to grade a video of their squat where the video started with 10 seconds of them standing still and then performing the motion, it would fail to apply the gaussians correctly and separate the symmetric motion.</li>
+            <li><b>We assume cosine similarity is a good similarity metric.</b> We needed to assume this because we wanted our vector comparisons to be scale invariant. This means we are sacrificing information for robustness.</li>
+            <!--Add More Assumptions-->
+        </ul>
+        In a general sense, we were successful because we were able to distinguish between different motions. In the last video above, the algorithm gave a low enough score that it was able to significantly say that the motion was not a squat. This means we've mathmatically encoded an idea of similarity in these abstract scenes.
+    </p>
     <p>Possible Extensions:
         <ul>
             <li>3D Pose Estimation for recording at any angle</li>
             <li>Automated benchmark zone finder</li>
             <li>Use <a href="http://densepose.org/">DensePose</a> to get finer detailed skeletons</li>
+            <li>Instead of benchmark zones, compare the paths of certain points throughout the motion</li>
+            <li>Experiment with different numbers of benchmark zones</li>
+            <li>Experiment with different methods of computing skeleton similarities</li>
         </ul>
     </p>
     <h3>References</h3>
